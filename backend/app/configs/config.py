@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    DATABASE_URI: str = os.getenv("DATABASE_URI")
-    DEBUG: bool = os.getenv("DEBUG")
+    DATABASE_URL: str = os.getenv("DATABASE_URL")
+    DEBUG: bool = os.getenv("DEBUG", "false").lower() in ("true", "1")
 
 config = Config()
