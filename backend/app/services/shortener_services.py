@@ -1,23 +1,24 @@
 import random
 import string
 
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.configs.config import config
 from app.mappers.shortener_mapper import ShortenerMapper
 from app.repositories.shortener_ropository import ShortenerRepository
 from app.schemas.shortener_schemas import ShortenResponse
-from app.configs.config import config
 
 
 class ShortenerServices:
     def __init__(self, db: AsyncSession):
         self.repo = ShortenerRepository(db)
 
-    def _generate_short_code(self, length: int = 6) -> str:
+    async def _generate_short_code(self, length: int = 6) -> str:
         """Generate short code"""
         while True:
             short_code = ''.join(random.choices(string.ascii_letters + string.digits, k=length))
-            existing_url = self.repo.get_url_by_short_code(short_code)
+            existing_url = await self.repo.get_url_by_short_code(short_code)
             if not existing_url:
                 return short_code
 
@@ -34,16 +35,20 @@ class ShortenerServices:
         if existing_url:
             return ShortenerMapper.to_short_response(existing_url, config.BASE_URL)
 
-        short_code = self._generate_short_code()
+        short_code = await self._generate_short_code()
         short_url = await self.repo.save_url(short_code, original_url)
         return ShortenerMapper.to_short_response(short_url, config.BASE_URL)
 
     async def get_original_url(self, short_code: str) -> str:
         """Get original url"""
         url = await self.repo.get_url_by_short_code(short_code)
-        if url:
+
+        if not url:
+            raise HTTPException(status_code=404, detail="URL not found")
+        else:
             await self._increment_clicks(short_code)
-        return url.original_url if url else ""
+
+        return url.original_url
 
     async def get_stats(self, short_code: str) -> int:
         """Get stats"""

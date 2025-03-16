@@ -1,8 +1,10 @@
 from fastapi import APIRouter
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.responses import RedirectResponse
 
 from app.databases.db import get_db
+from app.mappers.shortener_mapper import ShortenerMapper
 from app.schemas.shortener_schemas import ShortenRequest, ShortenResponse
 from app.services.shortener_services import ShortenerServices
 
@@ -16,11 +18,12 @@ async def shorten_url(request: ShortenRequest, db: AsyncSession = Depends(get_db
     return await shortener_services.create_short_url(str(request.long_url))
 
 
-@router.get("/s/{short_code}")
+@router.get("/go/{short_code}", response_class=RedirectResponse)
 async def get_original_url(short_code: str, db: AsyncSession = Depends(get_db)):
-    """Get original url"""
+    """Redirect to original url"""
     shortener_services = ShortenerServices(db)
-    return await shortener_services.get_original_url(short_code)
+    original_url = await shortener_services.get_original_url(short_code)
+    return ShortenerMapper.to_redirect_response(original_url)
 
 
 @router.get("/stats/{short_code}")
@@ -30,7 +33,7 @@ async def get_stats(short_code: str, db: AsyncSession = Depends(get_db)):
     return await shortener_services.get_stats(short_code)
 
 
-@router.delete("/s/{short_code}")
+@router.delete("/go/{short_code}")
 async def delete_short_url(short_code: str, db: AsyncSession = Depends(get_db)):
     """Delete short url"""
     shortener_services = ShortenerServices(db)
