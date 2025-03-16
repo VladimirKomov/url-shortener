@@ -1,3 +1,4 @@
+import logging
 from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncAttrs, AsyncSession
@@ -5,10 +6,11 @@ from sqlalchemy.orm import DeclarativeBase
 
 from app.configs.config import config
 
+logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
+
 # Create engine
 engine = create_async_engine(
     config.DATABASE_URL,
-    echo=config.DEBUG
 )
 
 # Create session factory

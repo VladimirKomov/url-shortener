@@ -10,7 +10,16 @@ class ShortenerRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_short_code(self, short_code: str) -> Optional[ShortenedURL]:
+    async def get_url_by_long_url(self, original_url: str) -> Optional[ShortenedURL]:
+        """GET URL by original url"""
+        result = await self.db.execute(
+            select(ShortenedURL).where(
+                ShortenedURL.original_url == original_url
+            )
+        )
+        return result.scalars().first()
+
+    async def get_url_by_short_code(self, short_code: str) -> Optional[ShortenedURL]:
         """GET URL by short code"""
         result = await self.db.execute(
             select(ShortenedURL).where(
@@ -19,7 +28,7 @@ class ShortenerRepository:
         )
         return result.scalars().first()
 
-    async def save_short_url(self, short_code: str, original_url: str) -> ShortenedURL:
+    async def save_url(self, short_code: str, original_url: str) -> ShortenedURL:
         """Save short code"""
         new_url = ShortenedURL(short_code=short_code, original_url=original_url)
         self.db.add(new_url)
@@ -33,7 +42,7 @@ class ShortenerRepository:
         await self.db.commit()
         await self.db.refresh(url)
 
-    async def delete_short_url(self, short_code: str) -> bool:
+    async def delete_url(self, short_code: str) -> bool:
         """Delete short code"""
         result = await self.db.execute(
             delete(ShortenedURL).where(
