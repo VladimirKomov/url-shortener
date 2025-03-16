@@ -38,4 +38,6 @@ async def delete_short_url(short_code: str, db: AsyncSession = Depends(get_db)):
     """Delete short url"""
     shortener_services = ShortenerServices(db)
     success = await shortener_services.delete_short_url(short_code)
+    if not success:
+        return {"message": "URL not found"}
     return {"message": "Short URL deleted"}
