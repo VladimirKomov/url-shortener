@@ -3,8 +3,8 @@ import string
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.configs.config import config
-from app.configs.exceptions import URLNotFoundException
+from app.core.config import config
+from app.core.exceptions import URLNotFoundException
 from app.mappers.shortener_mapper import ShortenerMapper
 from app.repositories.shortener_ropository import ShortenerRepository
 from app.schemas.shortener_schemas import ShortenResponse, URLStatsResponse

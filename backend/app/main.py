@@ -5,7 +5,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from starlette.responses import JSONResponse
 
-from app.configs.logger import logger
+from app.core.logger import logger
 from app.routers import shortener_routers
 
 app = FastAPI(
