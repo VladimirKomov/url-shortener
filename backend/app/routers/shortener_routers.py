@@ -5,7 +5,7 @@ from starlette.responses import RedirectResponse
 
 from app.databases.db import get_db
 from app.mappers.shortener_mapper import ShortenerMapper
-from app.schemas.shortener_schemas import ShortenRequest, ShortenResponse
+from app.schemas.shortener_schemas import ShortenRequest, ShortenResponse, URLStatsResponse
 from app.services.shortener_services import ShortenerServices
 
 router = APIRouter()
@@ -26,7 +26,7 @@ async def get_original_url(short_code: str, db: AsyncSession = Depends(get_db)):
     return ShortenerMapper.to_redirect_response(original_url)
 
 
-@router.get("/stats/{short_code}")
+@router.get("/stats/{short_code}", response_model=URLStatsResponse)
 async def get_stats(short_code: str, db: AsyncSession = Depends(get_db)):
     """Increment clicks"""
     shortener_services = ShortenerServices(db)

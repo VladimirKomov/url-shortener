@@ -7,6 +7,6 @@ class ShortenResponse(BaseModel):
     short_code: str
     short_url: str
 
-class URLStats(BaseModel):
+class URLStatsResponse(BaseModel):
     short_code: str
     clicks: int

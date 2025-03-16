@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.config import config
 from app.mappers.shortener_mapper import ShortenerMapper
 from app.repositories.shortener_ropository import ShortenerRepository
-from app.schemas.shortener_schemas import ShortenResponse
+from app.schemas.shortener_schemas import ShortenResponse, URLStatsResponse
 
 
 class ShortenerServices:
@@ -42,18 +42,18 @@ class ShortenerServices:
     async def get_original_url(self, short_code: str) -> str:
         """Get original url"""
         url = await self.repo.get_url_by_short_code(short_code)
-
         if not url:
             raise HTTPException(status_code=404, detail="URL not found")
         else:
             await self._increment_clicks(short_code)
-
         return url.original_url
 
-    async def get_stats(self, short_code: str) -> int:
+    async def get_stats(self, short_code: str) -> URLStatsResponse:
         """Get stats"""
         url = await self.repo.get_url_by_short_code(short_code)
-        return url.clicks if url else 0
+        if not url:
+            raise HTTPException(status_code=404, detail="URL not found")
+        return ShortenerMapper.to_url_stats_response(url)
 
     async def delete_short_url(self, short_code: str) -> bool:
         """Delete short url"""
