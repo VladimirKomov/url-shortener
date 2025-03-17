@@ -1,6 +1,7 @@
 import asyncio
 
 import redis.asyncio as aioredis
+from aioredis import Redis
 
 from app.core.config import config
 from app.core.logger import logger
@@ -17,7 +18,7 @@ class RedisClient:
             cls._instance.client = None
         return cls._instance
 
-    async def _create_client(self):
+    async def _create_client(self) -> None:
         """ Create a Redis client """
         async with self._lock:
             if self.client is None:
@@ -31,7 +32,7 @@ class RedisClient:
                     logger.error(f"Error creating Redis client: {e}")
                     self.client = None
 
-    async def connect(self):
+    async def connect(self) -> None:
         """ Initialize the Redis connection if not already connected or lost """
         if self.client is None:
             await self._create_client()
@@ -43,13 +44,13 @@ class RedisClient:
                 await self.close()
                 await self._create_client()
 
-    async def get_client(self) -> aioredis.Redis:
+    async def get_client(self) -> Redis:
         await self.connect()
         if self.client is None:
             raise ConnectionError("Redis is not available!")
         return self.client
 
-    async def close(self):
+    async def close(self) -> None:
         """ Close the Redis connection """
         if self.client:
             try:
