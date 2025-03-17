@@ -1,6 +1,7 @@
 import random
 import string
 
+from fastapi import BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import config
@@ -8,11 +9,13 @@ from app.core.exceptions import URLNotFoundException
 from app.mappers.shortener_mapper import ShortenerMapper
 from app.repositories.shortener_ropository import ShortenerRepository
 from app.schemas.shortener_schemas import ShortenResponse, URLStatsResponse
+from app.services.shortener_redis_cache_services import ShortenerRedisCacheServices
 
 
 class ShortenerServices:
     def __init__(self, db: AsyncSession):
         self.repo = ShortenerRepository(db)
+        self.cache = ShortenerRedisCacheServices()
 
     async def _generate_short_code(self, length: int = 6) -> str:
         """Generate short code"""
@@ -22,8 +25,25 @@ class ShortenerServices:
             if not existing_url:
                 return short_code
 
-    async def _increment_clicks(self, short_code: str) -> None:
-        """Increment clicks"""
+    async def _get_url_from_cache_or_db(self, short_code: str, background_tasks: BackgroundTasks) -> str:
+        """Get url from cache or db"""
+        cached_url = await self.cache.get(short_code)
+        if cached_url:
+            return cached_url
+
+        url = await self.repo.get_url_by_short_code(short_code)
+        if not url:
+            raise URLNotFoundException()
+
+        await self._save_to_cache(short_code, url.original_url)
+        return url.original_url
+
+    async def _save_to_cache(self, short_code: str, original_url: str) -> None:
+        """Save to cache"""
+        await self.cache.set(short_code, original_url)
+
+    async def _update_clicks(self, short_code: str) -> None:
+        """Update clicks"""
         url = await self.repo.get_url_by_short_code(short_code)
         if url:
             url.clicks += 1
@@ -39,22 +59,18 @@ class ShortenerServices:
         # save to db
         short_url = await self.repo.save_url(short_code, original_url)
         # save to cache
-        await self.cache.set(short_code, original_url)
+        await self._save_to_cache(short_code, original_url)
 
         return ShortenerMapper.to_short_response(short_url, config.BASE_URL)
 
-    async def get_original_url(self, short_code: str) -> str:
+    async def get_original_url(self, short_code: str, background_tasks: BackgroundTasks) -> str:
         """Get original url"""
-        # check cache
-        cached_url = await self.cache.get(short_code)
-        if cached_url:
-            return cached_url
-
-        url = await self.repo.get_url_by_short_code(short_code)
-        if not url:
-            raise URLNotFoundException()
-        await self._increment_clicks(short_code)
-        return url.original_url
+        original_url = await self._get_url_from_cache_or_db(
+            short_code,
+            background_tasks
+        )
+        background_tasks.add_task(self._update_clicks, short_code)
+        return original_url
 
     async def get_stats(self, short_code: str) -> URLStatsResponse:
         """Get stats"""
@@ -65,6 +81,7 @@ class ShortenerServices:
 
     async def delete_short_url(self, short_code: str) -> bool:
         """Delete short url"""
+        await self.cache.delete(short_code)
         success = await self.repo.delete_url(short_code)
         if not success:
             raise URLNotFoundException()
