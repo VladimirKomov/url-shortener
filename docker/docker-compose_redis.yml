@@ -1,0 +1,17 @@
+# project name
+name: url-shortener
+
+services:
+  redis:
+    image: redis:latest
+    container_name: url_shortener_redis-cache
+    restart: always
+    ports:
+      - "6379:6379"
+    # save if was a change in 20s
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:
