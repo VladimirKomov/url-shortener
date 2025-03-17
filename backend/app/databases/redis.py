@@ -1,7 +1,7 @@
 import asyncio
 
 import redis.asyncio as aioredis
-from aioredis import Redis
+from redis.asyncio import Redis
 
 from app.core.config import config
 from app.core.logger import logger

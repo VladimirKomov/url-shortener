@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import RedirectResponse
@@ -20,10 +20,17 @@ async def shorten_url(request: ShortenRequest, db: AsyncSession = Depends(get_db
 
 
 @router.get("/go/{short_code}", response_class=RedirectResponse)
-async def get_original_url(short_code: str, db: AsyncSession = Depends(get_db)):
+async def get_original_url(
+        short_code: str,
+        background_tasks: BackgroundTasks,
+        db: AsyncSession = Depends(get_db)
+):
     """Redirect to original url"""
     shortener_services = ShortenerServices(db)
-    original_url = await shortener_services.get_original_url(short_code)
+    original_url = await shortener_services.get_original_url(
+        short_code=short_code,
+        background_tasks=background_tasks
+    )
     return ShortenerMapper.to_redirect_response(original_url)
 
 

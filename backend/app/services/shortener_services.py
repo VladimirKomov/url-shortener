@@ -25,7 +25,7 @@ class ShortenerServices:
             if not existing_url:
                 return short_code
 
-    async def _get_url_from_cache_or_db(self, short_code: str) -> str:
+    async def _get_url_from_cache_or_db(self, short_code: str, background_tasks: BackgroundTasks) -> str:
         """Get url from cache or db"""
         cached_url = await self.cache.get(short_code)
         if cached_url:
@@ -65,7 +65,10 @@ class ShortenerServices:
 
     async def get_original_url(self, short_code: str, background_tasks: BackgroundTasks) -> str:
         """Get original url"""
-        original_url = await self._get_url_from_cache_or_db(short_code)
+        original_url = await self._get_url_from_cache_or_db(
+            short_code,
+            background_tasks
+        )
         background_tasks.add_task(self._update_clicks, short_code)
         return original_url
 
@@ -78,6 +81,7 @@ class ShortenerServices:
 
     async def delete_short_url(self, short_code: str) -> bool:
         """Delete short url"""
+        await self.cache.delete(short_code)
         success = await self.repo.delete_url(short_code)
         if not success:
             raise URLNotFoundException()
