@@ -1,17 +1,26 @@
 import time
 import traceback
+from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from starlette.responses import JSONResponse
 
 from app.core.logger import logger
+from app.databases.redis import redis_client
 from app.routers import shortener_routers
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    await redis_client.connect()
+    yield
+    await redis_client.close()
 
 app = FastAPI(
     title="URL Shortener API",
     description="API for shortening links",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 @app.exception_handler(HTTPException)

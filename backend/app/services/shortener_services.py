@@ -36,11 +36,20 @@ class ShortenerServices:
             return ShortenerMapper.to_short_response(existing_url, config.BASE_URL)
 
         short_code = await self._generate_short_code()
+        # save to db
         short_url = await self.repo.save_url(short_code, original_url)
+        # save to cache
+        await self.cache.set(short_code, original_url)
+
         return ShortenerMapper.to_short_response(short_url, config.BASE_URL)
 
     async def get_original_url(self, short_code: str) -> str:
         """Get original url"""
+        # check cache
+        cached_url = await self.cache.get(short_code)
+        if cached_url:
+            return cached_url
+
         url = await self.repo.get_url_by_short_code(short_code)
         if not url:
             raise URLNotFoundException()
