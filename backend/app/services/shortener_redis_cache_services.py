@@ -30,8 +30,9 @@ class ShortenerRedisCacheServices:
         success = await client.setex(key, ttl, value)
         if success is None or success is False:
             logger.error(f"Error setting {key} to redis")
+            return False
         logger.info(f"Setting {key} to redis")
-        return success
+        return True
 
     async def delete(self, key: str) -> bool:
         """Delete value from redis"""

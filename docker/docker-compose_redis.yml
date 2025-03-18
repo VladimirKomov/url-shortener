@@ -9,7 +9,7 @@ services:
     ports:
       - "6379:6379"
     # save if was a change in 20s
-    command: redis-server --save 20 1 --loglevel warning
+    command: redis-server --save 20 1 --loglevel warning --maxmemory 100mb --maxmemory-policy allkeys-lru --appendfsync everysec
     volumes:
       - redis-data:/data
 
