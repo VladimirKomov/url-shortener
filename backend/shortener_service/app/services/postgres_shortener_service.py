@@ -9,10 +9,12 @@ from app.core.exceptions import URLNotFoundException
 from app.mappers.shortener_mapper import ShortenerMapper
 from app.repositories.shortener_ropository import ShortenerRepository
 from app.schemas.shortener_schemas import ShortenResponse, URLStatsResponse
-from app.services.shortener_redis_cache_services import ShortenerRedisCacheServices
+from app.services.helpers.shortener_redis_cache_services import ShortenerRedisCacheServices
+from app.interfaces.shortener_interfaces import AbstractShortenerService
 
 
-class ShortenerServices:
+class PostgresShortenerService(AbstractShortenerService):
+    """Shortener services"""
     def __init__(self, db: AsyncSession):
         self.repo = ShortenerRepository(db)
         self.cache = ShortenerRedisCacheServices()

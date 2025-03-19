@@ -4,13 +4,16 @@
 A URL shortening service similar to Bit.ly that allows users to shorten long URLs and retrieve statistics about their usage. The service uses **FastAPI** for the backend, **PostgreSQL** for persistent storage, **Redis** for caching, and is deployable with **Docker & Kubernetes**.
 
 ## 🚀 Features
-### 🔹 Backend (FastAPI + PostgreSQL + Redis)
+### 🔹 Backend (FastAPI + PostgreSQL + Redis + Kafka)
 - **Shorten a long URL** (`POST /shorten/`) ➝ Returns a short code.
 - **Redirect to the original URL** (`GET /s/{short_code}/`) ➝ Redirects to the original long URL.
 - **Get click statistics** (`GET /stats/{short_code}/`) ➝ Returns the number of times a short URL has been accessed.
 - **Redis caching** for frequently used URLs to reduce database queries.
 - **Asynchronous database operations** using SQLAlchemy and `asyncpg`.
 - **Optimized background tasks** for updating click counts without blocking requests.
+- **PostgreSQL integration** (`backend/shortener_service/app/databases/postgresql.py`) ➝ Provides persistent storage for short URLs and analytics.
+- **Redis integration** (`backend/shortener_service/app/databases/redis.py`) ➝ Used for caching frequently accessed URLs to improve performance.
+- **Kafka integration** (`backend/shortener_service/app/databases/kafka.py`) ➝ Enables event-driven architecture for handling analytics and security checks asynchronously.
 
 ### 🔹 Frontend (React)
 - **User-friendly interface** for shortening URLs.
@@ -18,11 +21,10 @@ A URL shortening service similar to Bit.ly that allows users to shorten long URL
 - **Display of click statistics** for each shortened URL.
 
 ## 🛠 Tech Stack
-- **Backend:** FastAPI, PostgreSQL, Redis, SQLAlchemy, Pydantic
+- **Backend:** FastAPI, PostgreSQL, Redis, SQLAlchemy, Pydantic, Kafka
 - **Database:** PostgreSQL (Persistent Storage), Redis (Cache)
 - **Frontend:** React, Axios
 - **Deployment:** Docker, Kubernetes, CI/CD (optional)
-
 
 ## ⚡ Quick Start
 ### 1️⃣ **Run with Docker**
@@ -59,7 +61,7 @@ npm start
 ```
 
 ### 2️⃣ Redirect to Original URL
-**GET** `/s/{short_code}/`
+**GET** `/go/{short_code}/`
 - Redirects the user to the original long URL.
 
 ### 3️⃣ Get URL Statistics
@@ -71,3 +73,4 @@ npm start
   "clicks": 42
 }
 ```
+
