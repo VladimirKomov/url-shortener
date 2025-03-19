@@ -10,6 +10,7 @@ from app.core.logger import logger
 from app.databases.redis import redis_client
 from app.routers import shortener_routers
 
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     await redis_client.connect()

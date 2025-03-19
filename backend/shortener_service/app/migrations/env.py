@@ -7,9 +7,8 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.databases.db import Base
 # import our model
-from app.models.models import ShortenedURL
 
-from app.configs.config import config as app_config
+from app.core import config as app_config
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

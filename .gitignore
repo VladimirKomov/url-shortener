@@ -1,3 +1,4 @@
 /.idea/
-/backend/.env
-/backend/app/app.log
+/backend/shortener_service/.env
+/backend/shortener_service/app/app.log
+/backend/shortener_service/app.log
