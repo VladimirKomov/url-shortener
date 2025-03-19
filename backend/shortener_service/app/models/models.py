@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.databases.db import Base
+from app.databases.postgresql import Base
 
 
 class ShortenedURL(Base):

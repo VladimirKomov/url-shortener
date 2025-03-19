@@ -1,22 +1,19 @@
-import asyncio
-
 import redis.asyncio as aioredis
-from redis.asyncio import Redis
 
 from app.core.config import config
 from app.core.logger import logger
+from app.databases.base_client import BaseAsyncClient
 
 
-class RedisClient:
-    _instance = None
-    _lock = asyncio.Lock()
+class RedisClient(BaseAsyncClient):
+    """ Redis Client """
 
-    def __new__(cls):
-        """ Singleton pattern to ensure a single Redis connection """
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance.client = None
-        return cls._instance
+    async def _ping(self) -> bool:
+        """ Check Redis connection """
+        try:
+            return await self.client.ping()
+        except Exception:
+            return False
 
     async def _create_client(self) -> None:
         """ Create a Redis client """
@@ -32,25 +29,7 @@ class RedisClient:
                     logger.error(f"Error creating Redis client: {e}")
                     self.client = None
 
-    async def connect(self) -> None:
-        """ Initialize the Redis connection if not already connected or lost """
-        if self.client is None:
-            await self._create_client()
-        else:
-            try:
-                await self.client.ping()
-            except Exception as e:
-                logger.error(f"Redis connection error: {e}. Reconnecting...")
-                await self.close()
-                await self._create_client()
-
-    async def get_client(self) -> Redis:
-        await self.connect()
-        if self.client is None:
-            raise ConnectionError("Redis is not available!")
-        return self.client
-
-    async def close(self) -> None:
+    async def _close_client(self) -> None:
         """ Close the Redis connection """
         if self.client:
             try:

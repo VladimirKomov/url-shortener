@@ -3,7 +3,7 @@ from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import RedirectResponse
 
-from app.databases.db import get_db
+from app.databases.postgresql import get_db
 from app.databases.redis import redis_client
 from app.mappers.shortener_mapper import ShortenerMapper
 from app.schemas.shortener_schemas import ShortenRequest, ShortenResponse, URLStatsResponse
