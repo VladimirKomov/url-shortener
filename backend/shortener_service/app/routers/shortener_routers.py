@@ -7,27 +7,33 @@ from app.databases.postgresql import get_db
 from app.databases.redis import redis_client
 from app.mappers.shortener_mapper import ShortenerMapper
 from app.schemas.shortener_schemas import ShortenRequest, ShortenResponse, URLStatsResponse
-from app.services.shortener_services import ShortenerServices
+from app.interfaces.shortener_interfaces import AbstractShortenerService
+from app.services.postgres_shortener_service import PostgresShortenerService
 
 router = APIRouter()
 
 
+def get_url_shortener_service(db: AsyncSession = Depends(get_db)) -> AbstractShortenerService:
+    return PostgresShortenerService(db)
+
+
 @router.post("/shorter", response_model=ShortenResponse)
-async def shorten_url(request: ShortenRequest, db: AsyncSession = Depends(get_db)):
+async def shorten_url(
+        request: ShortenRequest,
+        service: AbstractShortenerService = Depends(get_url_shortener_service)
+):
     """Shorten url"""
-    shortener_services = ShortenerServices(db)
-    return await shortener_services.create_short_url(str(request.long_url))
+    return await service.create_short_url(str(request.long_url))
 
 
 @router.get("/go/{short_code}", response_class=RedirectResponse)
 async def get_original_url(
         short_code: str,
         background_tasks: BackgroundTasks,
-        db: AsyncSession = Depends(get_db)
+        service: AbstractShortenerService = Depends(get_url_shortener_service)
 ):
     """Redirect to original url"""
-    shortener_services = ShortenerServices(db)
-    original_url = await shortener_services.get_original_url(
+    original_url = await service.get_original_url(
         short_code=short_code,
         background_tasks=background_tasks
     )
@@ -35,20 +41,25 @@ async def get_original_url(
 
 
 @router.get("/stats/{short_code}", response_model=URLStatsResponse)
-async def get_stats(short_code: str, db: AsyncSession = Depends(get_db)):
+async def get_stats(
+        short_code: str,
+        service: AbstractShortenerService = Depends(get_url_shortener_service)
+):
     """Increment clicks"""
-    shortener_services = ShortenerServices(db)
-    return await shortener_services.get_stats(short_code)
+    return await service.get_stats(short_code)
 
 
 @router.delete("/go/{short_code}")
-async def delete_short_url(short_code: str, db: AsyncSession = Depends(get_db)):
+async def delete_short_url(
+        short_code: str,
+        service: AbstractShortenerService = Depends(get_url_shortener_service)
+):
     """Delete short url"""
-    shortener_services = ShortenerServices(db)
-    success = await shortener_services.delete_short_url(short_code)
+    success = await service.delete_short_url(short_code)
     if not success:
         return {"message": "URL not found"}
     return {"message": "Short URL deleted"}
+
 
 # for test, delete after
 @router.get("/test-redis/")
