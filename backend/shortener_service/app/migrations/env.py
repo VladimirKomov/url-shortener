@@ -5,7 +5,7 @@ from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from app.databases.db import Base
+from app.databases.postgresql import Base
 # import our model
 
 from app.core import config as app_config
