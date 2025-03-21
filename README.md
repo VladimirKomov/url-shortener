@@ -85,7 +85,7 @@ npm start
   "clicks": 42
 }
 ```
-✅ Status
-✅ Backend core functionality (API, DB, Redis, Kafka) – Implemented
-🔄 Frontend and CI/CD – Planned
-📈 Extensible architecture for analytics and LLM-based security – Designed
+✅ Status  
+✅ Backend core functionality (API, DB, Redis, Kafka) – Implemented  
+🔄 Frontend and CI/CD – Planned  
+📈 Extensible architecture for analytics and LLM-based security – Designed  
