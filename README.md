@@ -1,49 +1,60 @@
-# URL Shortener API
+# 🔗 URL Shortener API
+
+A scalable, event-driven URL shortening service inspired by Bit.ly. Built with a modern backend stack and designed for performance, reliability, and extensibility.
+
+---
 
 ## 📌 Description
-A URL shortening service similar to Bit.ly that allows users to shorten long URLs and retrieve statistics about their usage. The service uses **FastAPI** for the backend, **PostgreSQL** for persistent storage, **Redis** for caching, and is deployable with **Docker & Kubernetes**.
+
+This project provides a backend service for shortening long URLs and tracking their usage statistics. The system is designed with production-grade technologies and patterns, including **asynchronous processing**, **caching**, **event streaming**, and **microservices architecture**.
+
+---
 
 ## 🚀 Features
-### 🔹 Backend (FastAPI + PostgreSQL + Redis + Kafka)
-- **Shorten a long URL** (`POST /shorten/`) ➝ Returns a short code.
-- **Redirect to the original URL** (`GET /s/{short_code}/`) ➝ Redirects to the original long URL.
-- **Get click statistics** (`GET /stats/{short_code}/`) ➝ Returns the number of times a short URL has been accessed.
-- **Redis caching** for frequently used URLs to reduce database queries.
-- **Asynchronous database operations** using SQLAlchemy and `asyncpg`.
-- **Optimized background tasks** for updating click counts without blocking requests.
-- **PostgreSQL integration** (`backend/shortener_service/app/databases/postgresql.py`) ➝ Provides persistent storage for short URLs and analytics.
-- **Redis integration** (`backend/shortener_service/app/databases/redis.py`) ➝ Used for caching frequently accessed URLs to improve performance.
-- **Kafka integration** (`backend/shortener_service/app/databases/kafka.py`) ➝ Enables event-driven architecture for handling analytics and security checks asynchronously.
 
+### ⚙️ Core Functionality (Backend)
+- `POST /shorten/` – Shorten a long URL.
+- `GET /go/{short_code}/` – Redirect to the original URL.
+- `GET /stats/{short_code}/` – Return usage statistics (click count).
 
-### 🔹 Frontend (React) (in progress)
-- **User-friendly interface** for shortening URLs.
-- **Copy to clipboard button** for easy sharing.
-- **Display of click statistics** for each shortened URL.
+### 🧠 Architecture Highlights
+- **Asynchronous FastAPI backend** with `asyncpg` and SQLAlchemy.
+- **Redis caching** to accelerate repeated URL lookups and reduce DB load.
+- **Kafka-based event system** for decoupled analytics, logging, and security modules.
+- **Modular database layer** using PostgreSQL for persistent storage.
+- **Background tasks** update usage data without blocking user-facing endpoints.
 
-## 🛠 Tech Stack
-- **Backend:** FastAPI, PostgreSQL, Redis, SQLAlchemy, Pydantic, Kafka
-- **Database:** PostgreSQL (Persistent Storage), Redis (Cache)
-- **Frontend:** React, Axios (in progress)
-- **Deployment:** Docker, Kubernetes, CI/CD (optional) (in progress)
+---
 
-## ⚡ Quick Start
-### 1️⃣ **Run with Docker**
-```sh
+## 🧱 Tech Stack
+
+| Layer           | Technology                            |
+|----------------|----------------------------------------|
+| **Backend**     | FastAPI, Pydantic, SQLAlchemy (async) |
+| **Database**    | PostgreSQL (persistent), Redis (cache)|
+| **Messaging**   | Kafka                                  |
+| **DevOps**      | Docker, Kubernetes (deployment-ready) |
+| **CI/CD**       | GitHub Actions (planned)              |
+| **Frontend**    | React + Axios (planned)               |
+
+---
+
+## 📦 Running the Service
+
+### ⚡ Docker (recommended)
+```bash
 docker-compose up --build
 ```
-### 2️⃣ **Run manually**
-#### **Backend**
-```sh
+
+### 2️⃣ **🧪 Local (manual)**
+# Backend
 cd backend
 uvicorn app.main:app --reload
-```
-#### **Frontend**
-```sh
+
+# Frontend (when ready)
 cd frontend
 npm install
 npm start
-```
 
 ## 🌐 API Endpoints
 ### 1️⃣ Shorten a URL
@@ -74,4 +85,7 @@ npm start
   "clicks": 42
 }
 ```
-
+✅ Status
+✅ Backend core functionality (API, DB, Redis, Kafka) – Implemented
+🔄 Frontend and CI/CD – Planned
+📈 Extensible architecture for analytics and LLM-based security – Designed
