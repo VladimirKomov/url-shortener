@@ -15,7 +15,8 @@ A URL shortening service similar to Bit.ly that allows users to shorten long URL
 - **Redis integration** (`backend/shortener_service/app/databases/redis.py`) ➝ Used for caching frequently accessed URLs to improve performance.
 - **Kafka integration** (`backend/shortener_service/app/databases/kafka.py`) ➝ Enables event-driven architecture for handling analytics and security checks asynchronously.
 
-### 🔹 Frontend (React)
+
+### 🔹 Frontend (React) (in progress)
 - **User-friendly interface** for shortening URLs.
 - **Copy to clipboard button** for easy sharing.
 - **Display of click statistics** for each shortened URL.
@@ -23,8 +24,8 @@ A URL shortening service similar to Bit.ly that allows users to shorten long URL
 ## 🛠 Tech Stack
 - **Backend:** FastAPI, PostgreSQL, Redis, SQLAlchemy, Pydantic, Kafka
 - **Database:** PostgreSQL (Persistent Storage), Redis (Cache)
-- **Frontend:** React, Axios
-- **Deployment:** Docker, Kubernetes, CI/CD (optional)
+- **Frontend:** React, Axios (in progress)
+- **Deployment:** Docker, Kubernetes, CI/CD (optional) (in progress)
 
 ## ⚡ Quick Start
 ### 1️⃣ **Run with Docker**
