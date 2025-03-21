@@ -1,8 +1,8 @@
-"""Create shortened_urls table
+"""init schema
 
-Revision ID: 8e4cb4c86a15
+Revision ID: 84acfcb696e0
 Revises: 
-Create Date: 2025-03-13 18:33:25.601015
+Create Date: 2025-03-21 17:06:28.594632
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '8e4cb4c86a15'
+revision: str = '84acfcb696e0'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -26,6 +26,8 @@ def upgrade() -> None:
     sa.Column('original_url', sa.String(), nullable=False),
     sa.Column('short_code', sa.String(), nullable=False),
     sa.Column('clicks', sa.Integer(), nullable=False),
+    sa.Column('is_valid', sa.Boolean(), nullable=False),
+    sa.Column('validated_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )

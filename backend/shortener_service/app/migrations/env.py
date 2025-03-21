@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.databases.postgresql import Base
 # import our model
+import app.models.models
 
 from app.core import config as app_config
 
@@ -30,7 +31,7 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-DATABASE_URL = app_config.DATABASE_URL
+DATABASE_URL = app_config.config.DATABASE_URL
 
 
 def run_migrations_offline() -> None:
