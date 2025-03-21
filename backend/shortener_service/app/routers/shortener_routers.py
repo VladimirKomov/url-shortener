@@ -20,10 +20,11 @@ def get_url_shortener_service(db: AsyncSession = Depends(get_db)) -> AbstractSho
 @router.post("/shorter", response_model=ShortenResponse)
 async def shorten_url(
         request: ShortenRequest,
+        background_tasks: BackgroundTasks,
         service: AbstractShortenerService = Depends(get_url_shortener_service)
 ):
     """Shorten url"""
-    return await service.create_short_url(str(request.long_url))
+    return await service.create_short_url(str(request.long_url), background_tasks)
 
 
 @router.get("/go/{short_code}", response_class=RedirectResponse)

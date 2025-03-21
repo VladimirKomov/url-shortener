@@ -9,7 +9,7 @@ class AbstractShortenerService(ABC):
     """ Abstract class for url shortener service """
 
     @abstractmethod
-    async def create_short_url(self, long_url: str) -> str:
+    async def create_short_url(self, long_url: str, background_tasks: BackgroundTasks) -> str:
         """ Create a short url """
         pass
 

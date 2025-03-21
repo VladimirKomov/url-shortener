@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "url-validator"
+version = "0.1.0"
+description = "Kafka consumer service for validating URLs"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+aiokafka = "^0.12.0"
+aiohttp = "^3.11.14"
+fastapi = "^0.115.11"
+uvicorn = "^0.34.0"
+
+[tool.poetry.dev-dependencies]
+black = "^23.3.0"
+isort = "^5.12.0"
+mypy = "^1.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
