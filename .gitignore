@@ -2,3 +2,4 @@
 /backend/shortener_service/.env
 /backend/shortener_service/app/app.log
 /backend/shortener_service/app.log
+/backend/url-validator/.env
