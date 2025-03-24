@@ -1,5 +1,3 @@
-# validator_app/services/validator_service.py
-
 from datetime import datetime
 from shared_models.kafka.url_validation import UrlValidationKafkaMessage
 from pydantic import BaseModel
@@ -25,15 +23,27 @@ class ValidatorService:
 
     async def handle_message(self, payload: UrlValidationKafkaMessage):
         result = await self.validate(payload)
-        await self.mongo.url_validator.url_validations.insert_one(result.dict())
 
-    async def validate(self, payload: UrlValidationKafkaMessage) -> UrlValidationResult:
-        is_safe = await self.google_service.is_url_safe(str(payload.original_url))
+        if result is not None:
+            await self.mongo.url_validator.url_validations.insert_one(result.model_dump())
+        else:
+            # Optionally, log or store unvalidated payloads
+            pass
+
+    async def validate(self, payload: UrlValidationKafkaMessage) -> UrlValidationResult | None:
+        # Use the updated method that returns (bool | None, list)
+        is_safe, threats = await self.google_service.is_url_safe(str(payload.original_url))
+
+        # If validation failed, skip storing result (or handle separately)
+        if is_safe is None:
+            return None
 
         return UrlValidationResult(
             short_code=payload.short_code,
             original_url=str(payload.original_url),
             is_safe=is_safe,
             checked_at=datetime.utcnow(),
+            inserted_at=datetime.utcnow(),
+            threat_types=[m["threatType"] for m in threats],
             details="Checked via Google Safe Browsing"
         )
