@@ -11,7 +11,6 @@ class UrlValidationResult(BaseModel):
     original_url: str
     is_safe: bool
     checked_at: datetime
-    inserted_at: datetime
     threat_types: list[str] = []
     details: str | None = None
 
@@ -42,8 +41,7 @@ class ValidatorService:
             short_code=payload.short_code,
             original_url=str(payload.original_url),
             is_safe=is_safe,
-            checked_at=datetime.utcnow(),
-            inserted_at=datetime.utcnow(),
+            checked_at=datetime.now(),
             threat_types=[m["threatType"] for m in threats],
             details="Checked via Google Safe Browsing"
         )

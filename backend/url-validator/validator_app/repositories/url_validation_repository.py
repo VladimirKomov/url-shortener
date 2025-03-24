@@ -13,7 +13,7 @@ class UrlValidationRepository:
 
     async def save(self, result: UrlValidationResult):
         doc = result.model_dump()
-        doc["inserted_at"] = datetime.utcnow()
+        doc["inserted_at"] = datetime.now()
         await self.collection.insert_one(doc)
 
 
