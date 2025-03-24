@@ -332,13 +332,13 @@ wmi = ["wmi (>=1.5.1)"]
 
 [[package]]
 name = "fastapi"
-version = "0.115.11"
+version = "0.115.12"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "fastapi-0.115.11-py3-none-any.whl", hash = "sha256:32e1541b7b74602e4ef4a0260ecaf3aadf9d4f19590bba3e1bf2ac4666aa2c64"},
-    {file = "fastapi-0.115.11.tar.gz", hash = "sha256:cc81f03f688678b92600a65a5e618b93592c65005db37157147204d8924bf94f"},
+    {file = "fastapi-0.115.12-py3-none-any.whl", hash = "sha256:e94613d6c05e27be7ffebdd6ea5f388112e5e430c8f7d6494a9d1d88d43e814d"},
+    {file = "fastapi-0.115.12.tar.gz", hash = "sha256:1e2c2a2646905f9e83d32f04a3f86aff4a286669c6c950ca95b5fd68c2602681"},
 ]
 
 [package.dependencies]
@@ -1035,6 +1035,22 @@ test = ["pytest (>=8.2)", "pytest-asyncio (>=0.24.0)"]
 zstd = ["zstandard"]
 
 [[package]]
+name = "shared-models"
+version = "0.1.0"
+description = "Common Pydantic models shared between services"
+optional = false
+python-versions = "^3.12"
+files = []
+develop = true
+
+[package.dependencies]
+pydantic = "^2.6.1"
+
+[package.source]
+type = "directory"
+url = "../shared_models"
+
+[[package]]
 name = "sniffio"
 version = "1.3.1"
 description = "Sniff out which async library your code is running under"
@@ -1190,4 +1206,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "1c5955c2e9856baefdaa57cc4ea902c2438810dd379702f1d8e19b33f50c48ee"
+content-hash = "190ec7ce50f2e6244e8f25616965c2e7be1a5e074a4d10986aec2c8d1b73036b"

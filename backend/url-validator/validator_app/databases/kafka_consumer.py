@@ -7,7 +7,7 @@ from aiokafka.structs import ConsumerRecord
 from validator_app.core.config import config
 from validator_app.core.logger import logger
 from validator_app.databases.base_client import BaseAsyncClient
-from validator_app.schemas.kafka_schemas import UrlValidationKafkaMessage
+from shared_models.kafka.url_validation import UrlValidationKafkaMessage
 
 
 class KafkaConsumerClient(BaseAsyncClient):

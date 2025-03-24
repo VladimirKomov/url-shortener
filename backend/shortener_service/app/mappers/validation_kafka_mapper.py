@@ -2,7 +2,7 @@ from typing import cast
 
 from pydantic import HttpUrl
 
-from app.schemas.kafka_schemas import UrlValidationKafkaMessage
+from shared_models.kafka.url_validation import UrlValidationKafkaMessage
 
 
 class ValidationKafkaMapper:

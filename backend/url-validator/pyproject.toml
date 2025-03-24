@@ -12,6 +12,8 @@ aiohttp = "^3.11.14"
 fastapi = "^0.115.11"
 uvicorn = "^0.34.0"
 motor = "^3.7.0"
+# adding common models
+shared-models = { path = "../shared_models", develop = true }
 
 [tool.poetry.dev-dependencies]
 black = "^23.3.0"

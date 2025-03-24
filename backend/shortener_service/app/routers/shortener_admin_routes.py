@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from app.core.logger import logger
-from app.schemas.kafka_schemas import UrlValidationKafkaMessage
+from shared_models.kafka.url_validation import UrlValidationKafkaMessage
 from app.services.helpers.shortener_kafka_producer_services import ShortenerKafkaProducerService
 
 router = APIRouter()

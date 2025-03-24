@@ -16,6 +16,8 @@ alembic = "^1.15.1"
 python-dotenv = "^1.0.1"
 aioredis = "^2.0.1"
 aiokafka = "^0.12.0"
+# adding common models
+shared-models = { path = "../shared_models", develop = true }
 
 
 [tool.poetry.group.dev.dependencies]
