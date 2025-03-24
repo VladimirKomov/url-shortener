@@ -18,13 +18,13 @@ class ShortenerKafkaProducerService:
     async def send_url_validation(self, short_code: str, original_url: str) -> bool:
         """Send URL to Kafka for async validation"""
         client = await self._get_client()
-        message = ValidationKafkaMapper.to_kafka_message(
+        payload = ValidationKafkaMapper.to_kafka_message(
             short_code=short_code,
             original_url=original_url,
         )
         try:
-            await client.send_and_wait(config.KAFKA_TOPIC_URL_VALIDATION, message)
-            logger.info(f"Sent to Kafka: {message}")
+            await client.send_and_wait(config.KAFKA_TOPIC_URL_VALIDATION, payload.model_dump())
+            logger.info(f"Sent to Kafka: {payload.model_dump()}")
             return True
         except Exception as e:
             logger.error(f"Kafka send failed: {e}")
