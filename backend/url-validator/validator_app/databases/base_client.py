@@ -3,11 +3,12 @@ import asyncio
 from abc import ABC
 from typing import Union
 
+from aiokafka import AIOKafkaConsumer
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from app.core.logger import logger
+from validator_app.core.logger import logger
 
-ClientType = Union[AsyncIOMotorClient, None]
+ClientType = Union[AsyncIOMotorClient, AIOKafkaConsumer, None]
 
 class BaseAsyncClient(ABC):
     _instance = None
@@ -31,6 +32,11 @@ class BaseAsyncClient(ABC):
         """ Check if the connection is alive """
         pass
 
+    @abc.abstractmethod
+    async def _close_client(self) -> None:
+        """ Close the connection """
+        pass
+
     async def connect(self) -> None:
         """ Initialize connection if not already connected or lost """
         if self.client is None:
@@ -51,7 +57,6 @@ class BaseAsyncClient(ABC):
             raise ConnectionError(f"{self.__class__.__name__} is not available!")
         return self.client
 
-    @abc.abstractmethod
-    async def _close_client(self) -> None:
+    async def close(self) -> None:
         """ Close the connection """
-        pass
+        await self._close_client()
