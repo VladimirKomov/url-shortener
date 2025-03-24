@@ -2,7 +2,7 @@ from aiokafka import AIOKafkaProducer
 
 from app.core.config import config
 from app.core.logger import logger
-from app.databases.kafka import kafka_client
+from app.databases.kafka import kafka_producer_client
 from app.mappers.validation_kafka_mapper import ValidationKafkaMapper
 
 
@@ -12,7 +12,7 @@ class ShortenerKafkaProducerService:
 
     async def _get_client(self) -> AIOKafkaProducer:
         if self._client is None:
-            self._client = await kafka_client.get_client()
+            self._client = await kafka_producer_client.get_client()
         return self._client
 
     async def send_url_validation(self, short_code: str, original_url: str) -> bool:

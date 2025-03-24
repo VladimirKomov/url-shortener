@@ -1,5 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 
+from validator_app.core.config import Config
 from validator_app.core.logger import logger
 from validator_app.databases.base_client import BaseAsyncClient
 
@@ -13,10 +14,20 @@ class MongoDBClient(BaseAsyncClient):
         except Exception:
             return False
 
-    async def _create_client(self) -> AsyncIOMotorClient:
+    async def _create_client(self) -> None:
         """ Returns the MongoDB client """
-        await self.connect()
-        return self.client
+        async with self._lock:
+            if self.client is None:
+                try:
+                    self.client = AsyncIOMotorClient(
+                        Config.MONGO_URL,
+                        serverSelectionTimeoutMS=3000,
+                        retryWrites=False
+                    )
+                    logger.info("MongoDB client created")
+                except Exception as e:
+                    logger.error(f"Error creating MongoDB client: {e}")
+                    self.client = None
 
     async def _close_client(self) -> None:
         """ Close the MongoDB connection """
