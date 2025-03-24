@@ -7,6 +7,7 @@ from aiokafka.structs import ConsumerRecord
 from validator_app.core.config import config
 from validator_app.core.logger import logger
 from validator_app.databases.base_client import BaseAsyncClient
+from shared_models.kafka.url_validation import UrlValidationKafkaMessage
 
 
 class KafkaConsumerClient(BaseAsyncClient):
@@ -77,7 +78,8 @@ class KafkaConsumerClient(BaseAsyncClient):
         """Processing a single message"""
         logger.info(f"Message received: {msg.value}")
         try:
-            # #######
+            payload = UrlValidationKafkaMessage(**msg.value)
+            logger.info(f"Received URL to validate: {payload.model_dump}")
             await self.client.commit()
             logger.info("Offset committed")
         except Exception as e:
