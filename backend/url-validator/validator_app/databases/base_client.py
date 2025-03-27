@@ -3,12 +3,12 @@ import asyncio
 from abc import ABC
 from typing import Union
 
-from aiokafka import AIOKafkaConsumer
+from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from validator_app.core.logger import logger
 
-ClientType = Union[AsyncIOMotorClient, AIOKafkaConsumer, None]
+ClientType = Union[AsyncIOMotorClient, AIOKafkaConsumer, AIOKafkaProducer, None]
 
 class BaseAsyncClient(ABC):
     _instance = None

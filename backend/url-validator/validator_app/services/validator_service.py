@@ -19,7 +19,8 @@ class UrlValidationResult(BaseModel):
 
 class ValidatorService:
     def __init__(
-            self, mongo_repository: UrlValidationRepository,
+            self,
+            mongo_repository: UrlValidationRepository,
             google_service: GoogleUrlChecker,
             kafka_producer_service: ValidationResultProducerService
     ):
@@ -32,7 +33,6 @@ class ValidatorService:
 
         await self.mongo.save(result)
         await self.kafka_producer_service.send_url_validation_result(result)
-
 
     async def validate(self, payload: UrlValidationKafkaMessage) -> UrlValidationResult:
         # Use the updated method that returns (bool | None, list)

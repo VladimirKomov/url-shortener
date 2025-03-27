@@ -3,8 +3,8 @@ from validator_app.repositories.url_validation_repository import UrlValidationRe
 from validator_app.services.helpers.validation_google_service import GoogleUrlChecker
 from validator_app.services.helpers.validation_kafka_producer_services import ValidationResultProducerService
 from validator_app.services.validator_service import ValidatorService
-from validator_app.databases.kafka_consumer import KafkaConsumerClient
-from validator_app.databases.kafka_producer import kafka_producer_client
+from validator_app.messaging.kafka_consumer import KafkaConsumerClient
+from validator_app.messaging.kafka_producer import kafka_producer_client
 from validator_app.databases.mongo_db import mongodb_client
 
 

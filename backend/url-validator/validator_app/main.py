@@ -9,6 +9,8 @@ async def main():
     try:
         # stopping main before calling stop_event.set()
         await stop_event.wait()
+    except KeyboardInterrupt:
+        print("👋 KeyboardInterrupt received")
     finally:
         await app_container.shutdown()
 
