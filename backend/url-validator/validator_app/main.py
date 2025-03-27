@@ -1,22 +1,20 @@
 import asyncio
+from validator_app.core.bootstrap import app_container
 
-from validator_app.core.lifespan import lifespan_start, lifespan_shutdown
-
+stop_event = asyncio.Event()
 
 async def main():
-    await lifespan_start()
+    # launching the container
+    await app_container.init()
     try:
-        # wait indefinitely until Ctrl+C is interrupted
-        await asyncio.Event().wait()
-    except (KeyboardInterrupt, asyncio.CancelledError):
-        print("Shutdown signal received.")
+        # stopping main before calling stop_event.set()
+        await stop_event.wait()
+    except KeyboardInterrupt:
+        print("KeyboardInterrupt received")
+    except asyncio.CancelledError:
+        pass
     finally:
-        await lifespan_shutdown()
-        print("Shutdown complete.")
-
+        await app_container.shutdown()
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print("KeyboardInterrupt – stopping...")
+    asyncio.run(main())

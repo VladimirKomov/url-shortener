@@ -49,11 +49,50 @@ This project provides a backend service for shortening long URLs and tracking th
 2. It's stored with `is_valid = False` and a unique short code.
 3. The original URL is sent to a Kafka topic.
 4. The `url-validator` microservice:
-    - Receives the message.
-    - Checks the URL with Google Safe Browsing.
-    - Saves the result in MongoDB.
-    - Sends back a Kafka message with validation status.
+   - Receives the message.
+   - Checks the URL with Google Safe Browsing.
+   - Saves the result in MongoDB.
+   - Sends back a Kafka message with validation status.
 5. The main service consumes the result and updates the original record.
+
+---
+
+## 📦 Microservices Overview
+
+This project uses a microservice architecture based on Kafka topics to decouple the main app from background processing. Each service handles a specific responsibility.
+
+| Microservice     | Description                                                                 |
+|------------------|-----------------------------------------------------------------------------|
+| `url-validator`  | Kafka consumer that validates URLs asynchronously using Google Safe Browsing |
+| (Planned) Stats  | Tracks usage analytics and aggregates them                                 |
+
+---
+
+## 🛡️ `url-validator` Microservice
+
+### 🧠 Responsibility:
+This service listens to the `url_validation` Kafka topic and validates incoming URLs via the **Google Safe Browsing API**. It stores validation results in **MongoDB** and publishes the results back via Kafka.
+
+### 📁 Key Technologies:
+- `aiokafka` – Kafka consumer
+- `motor` – async MongoDB client
+- `Google Safe Browsing API` – to detect malware, phishing, etc.
+- `shared-models` – reusable Pydantic models shared across services
+
+### 🛠️ How It Works:
+1. Consumes messages from Kafka with short_code + original_url.
+2. Sends the URL to Google Safe Browsing.
+3. Saves the result (safe/threat types/etc.) to MongoDB.
+4. Sends the result back to Kafka so the main service can mark the URL as active.
+
+### ▶️ To run it manually:
+```bash
+cd backend/url-validator
+poetry install
+poetry run python validator_app/main.py
+```
+
+💡 This service runs as a background daemon using asyncio and exits cleanly on `Ctrl+C`.
 
 ---
 
@@ -105,9 +144,10 @@ npm start
 ```
 ✅ Status  
 ✅ Backend core functionality (API, DB, Redis, Kafka) – Implemented  
-✅ URL Validator microservice with Google Safe Browsing – Partly
+✅ URL Validator microservice with Google Safe Browsing – ✅ Completed  
 🔄 Frontend and CI/CD – Planned  
-📈 Extensible architecture for analytics and LLM-based security – Designed  
+📈 Extensible architecture for analytics and LLM-based security – Designed
 
-🧠 Inspiration
+🧠 Inspiration  
 This project showcases how to build a real-world, production-oriented system using modern Python, asynchronous architecture, and microservice communication via Kafka. It also demonstrates real-world use of external APIs for safe browsing validation.
+
