@@ -1,8 +1,8 @@
 from datetime import datetime
-from shared_models.kafka.url_validation import UrlValidationKafkaMessage
-from pydantic import BaseModel
-from motor.motor_asyncio import AsyncIOMotorClient
 
+from pydantic import BaseModel
+
+from shared_models.kafka.url_validation import UrlValidationKafkaMessage
 from validator_app.repositories.url_validation_repository import UrlValidationRepository
 from validator_app.services.helpers.validation_google_service import GoogleUrlChecker
 from validator_app.services.helpers.validation_kafka_producer_services import ValidationResultProducerService
