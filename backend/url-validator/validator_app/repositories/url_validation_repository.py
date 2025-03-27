@@ -3,7 +3,7 @@ from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from validator_app.core.config import config
-from validator_app.services.validator_service import UrlValidationResult
+from shared_models.kafka.url_validation import UrlValidationResult
 
 
 class UrlValidationRepository:

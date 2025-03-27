@@ -1,20 +1,9 @@
-from datetime import datetime
-
-from pydantic import BaseModel
-
 from shared_models.kafka.url_validation import UrlValidationKafkaMessage
+from shared_models.kafka.url_validation import UrlValidationResult
+from validator_app.mappers.validation_kafka_mapper import KafkaMapper
 from validator_app.repositories.url_validation_repository import UrlValidationRepository
 from validator_app.services.helpers.validation_google_service import GoogleUrlChecker
 from validator_app.services.helpers.validation_kafka_producer_services import ValidationResultProducerService
-
-
-class UrlValidationResult(BaseModel):
-    short_code: str
-    original_url: str
-    is_safe: bool | None
-    checked_at: datetime
-    threat_types: list[str] = []
-    details: str | None = None
 
 
 class ValidatorService:
@@ -46,12 +35,9 @@ class ValidatorService:
         )
 
         # If validation failed, skip storing result (or handle separately)
-        return UrlValidationResult(
-            short_code=payload.short_code,
-            original_url=str(payload.original_url),
-            # None - the check was not performed
-            is_safe=is_safe,
-            checked_at=datetime.now(),
-            threat_types=[m["threatType"] for m in threats],
-            details=details
+        return KafkaMapper.to_kafka_response(
+            payload,
+            is_safe,
+            threats,
+            details
         )

@@ -2,7 +2,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from validator_app.core.config import Config
 from validator_app.core.logger import logger
-from validator_app.databases.base_client import BaseAsyncClient
+from validator_app.core.base_client import BaseAsyncClient
 
 
 class MongoDBClient(BaseAsyncClient):

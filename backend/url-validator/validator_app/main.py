@@ -1,5 +1,5 @@
 import asyncio
-from validator_app.bootstrap import app_container
+from validator_app.core.bootstrap import app_container
 
 stop_event = asyncio.Event()
 
@@ -10,7 +10,9 @@ async def main():
         # stopping main before calling stop_event.set()
         await stop_event.wait()
     except KeyboardInterrupt:
-        print("👋 KeyboardInterrupt received")
+        print("KeyboardInterrupt received")
+    except asyncio.CancelledError:
+        pass
     finally:
         await app_container.shutdown()
 

@@ -1,18 +1,22 @@
-from typing import cast
+from datetime import datetime
 
-from pydantic import HttpUrl
-
-from shared_models.kafka.url_validation import UrlValidationKafkaMessage
+from shared_models.kafka.url_validation import UrlValidationKafkaMessage, UrlValidationResult
 
 
 class KafkaMapper:
     @staticmethod
-    def to_kafka_message(short_code: str, original_url: str) -> UrlValidationKafkaMessage:
-        return UrlValidationKafkaMessage(
-            short_code=short_code,
-            original_url=cast(HttpUrl, original_url),
+    def to_kafka_response(
+            payload: UrlValidationKafkaMessage,
+            is_safe: bool | None,
+            threats: list,
+            details: str
+    ) -> UrlValidationResult:
+        return UrlValidationResult(
+            short_code=payload.short_code,
+            original_url=str(payload.original_url),
+            # None - the check was not performed
+            is_safe=is_safe,
+            checked_at=datetime.now(),
+            threat_types=[m["threatType"] for m in threats],
+            details=details
         )
-
-    @staticmethod
-    def from_kafka_result(message: dict) -> tuple[str, bool]:
-        return message["short_code"], message["is_valid"]

@@ -1,9 +1,9 @@
 from aiokafka import AIOKafkaProducer
 
+from shared_models.kafka.url_validation import UrlValidationResult
 from validator_app.core.config import config
 from validator_app.core.logger import logger
 from validator_app.messaging.kafka_producer import kafka_producer_client
-from validator_app.services.validator_service import UrlValidationResult
 
 
 class ValidationResultProducerService:
