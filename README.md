@@ -151,3 +151,28 @@ npm start
 🧠 Inspiration  
 This project showcases how to build a real-world, production-oriented system using modern Python, asynchronous architecture, and microservice communication via Kafka. It also demonstrates real-world use of external APIs for safe browsing validation.
 
+---
+
+## 🔁 URL Validation Status
+
+The system uses a strongly-typed `Enum` to track the validation status of each shortened URL. This approach provides flexibility and ensures type safety for future status extensions.
+
+### 🧩 Possible statuses:
+
+| Status     | Description                                         |
+|------------|-----------------------------------------------------|
+| `PENDING`  | The URL is awaiting validation                      |
+| `VALID`    | The URL has been validated and is safe              |
+| `INVALID`  | The URL is considered unsafe (e.g., phishing, malware) |
+
+> By default, all newly created short links receive the `PENDING` status and are updated after validation is complete.
+
+### ⚙️ Validation Logic
+
+- When a user shortens a URL, it is stored in the database with the status `PENDING`.
+- A Kafka message is sent to the validator service.
+- The validator uses Google's Safe Browsing API to assess the URL.
+- After validation, it sends a Kafka message back with the status (`VALID` or `INVALID`).
+- The main service consumes this message and updates the corresponding record in PostgreSQL.
+
+> ✅ Thanks to the use of enums, introducing future statuses like `EXPIRED` or `REVIEW_REQUIRED` will be seamless and safe.

@@ -2,7 +2,7 @@ from aiokafka import AIOKafkaProducer
 
 from app.core.config import config
 from app.core.logger import logger
-from app.databases.kafka import kafka_producer_client
+from app.messaging.kafka_producer import kafka_producer_client
 from app.mappers.shortener_kafka_mapper import ValidationKafkaMapper
 
 

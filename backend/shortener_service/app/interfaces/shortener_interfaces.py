@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from fastapi import BackgroundTasks
 
 from app.schemas.shortener_schemas import URLStatsResponse
+from shared_models.kafka.url_validation import UrlValidationResult
 
 
 class AbstractShortenerService(ABC):
@@ -11,6 +12,11 @@ class AbstractShortenerService(ABC):
     @abstractmethod
     async def create_short_url(self, long_url: str, background_tasks: BackgroundTasks) -> str:
         """ Create a short url """
+        pass
+
+    @abstractmethod
+    async def update_validation_status(self, url_validation_result: UrlValidationResult) -> None:
+        """ Update the validation status """
         pass
 
     @abstractmethod

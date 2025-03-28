@@ -1,20 +1,14 @@
 from fastapi import APIRouter, BackgroundTasks
 from fastapi.params import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import RedirectResponse
 
-from app.databases.postgresql import get_db
 from app.databases.redis import redis_client
+from app.dependencies.shortener_service import get_url_shortener_service
+from app.interfaces.shortener_interfaces import AbstractShortenerService
 from app.mappers.shortener_mapper import ShortenerMapper
 from app.schemas.shortener_schemas import ShortenRequest, ShortenResponse, URLStatsResponse
-from app.interfaces.shortener_interfaces import AbstractShortenerService
-from app.services.postgres_shortener_service import PostgresShortenerService
 
 router = APIRouter()
-
-
-def get_url_shortener_service(db: AsyncSession = Depends(get_db)) -> AbstractShortenerService:
-    return PostgresShortenerService(db)
 
 
 @router.post("/shorter", response_model=ShortenResponse)

@@ -6,16 +6,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import config
 from app.core.exceptions import URLNotFoundException
+from app.interfaces.shortener_interfaces import AbstractShortenerService
 from app.mappers.shortener_mapper import ShortenerMapper
 from app.repositories.shortener_ropository import ShortenerRepository
 from app.schemas.shortener_schemas import ShortenResponse, URLStatsResponse
 from app.services.helpers.shortener_kafka_producer_services import ShortenerKafkaProducerService
 from app.services.helpers.shortener_redis_cache_services import ShortenerRedisCacheServices
-from app.interfaces.shortener_interfaces import AbstractShortenerService
+from shared_models.kafka.enums import ValidationStatus
+from shared_models.kafka.url_validation import UrlValidationResult
 
 
 class PostgresShortenerService(AbstractShortenerService):
     """Shortener services"""
+
     def __init__(self, db: AsyncSession):
         self.repo = ShortenerRepository(db)
         self.cache = ShortenerRedisCacheServices()
@@ -48,10 +51,7 @@ class PostgresShortenerService(AbstractShortenerService):
 
     async def _update_clicks(self, short_code: str) -> None:
         """Update clicks"""
-        url = await self.repo.get_url_by_short_code(short_code)
-        if url:
-            url.clicks += 1
-            await self.repo.update_url(url)
+        await self.repo.increment_clicks(short_code)
 
     async def create_short_url(self, original_url: str, background_tasks: BackgroundTasks) -> ShortenResponse:
         """Create short url"""
@@ -61,15 +61,25 @@ class PostgresShortenerService(AbstractShortenerService):
 
         short_code = await self._generate_short_code()
         # save to db
-        short_url = await self.repo.save_url(short_code, original_url)
-        # save to cache
-        #await self._save_to_cache(short_code, original_url)
+        short_url = await self.repo.save_url(
+            short_code,
+            original_url,
+            validation_status=ValidationStatus.PENDING
+        )
         # send to Kafka for validation (async validation)
         background_tasks.add_task(
             self.kafka_producer.send_url_validation, short_code, original_url
         )
 
         return ShortenerMapper.to_short_response(short_url, config.BASE_URL)
+
+    async def update_validation_status(self, url_validation_result: UrlValidationResult) -> None:
+        """Update validation status"""
+        await self.repo.set_url_valid_status(
+            short_code=url_validation_result.short_code,
+            validation_status=url_validation_result.validation_status,
+            checked_at=url_validation_result.checked_at
+        )
 
     async def get_original_url(self, short_code: str, background_tasks: BackgroundTasks) -> str:
         """Get original url"""
