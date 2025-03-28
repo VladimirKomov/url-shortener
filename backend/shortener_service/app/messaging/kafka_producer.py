@@ -4,7 +4,7 @@ import aiokafka
 
 from app.core.config import config
 from app.core.logger import logger
-from app.databases.base_client import BaseAsyncClient
+from app.core.base_client import BaseAsyncClient
 
 
 class KafkaProducerClient(BaseAsyncClient):

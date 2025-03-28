@@ -2,7 +2,7 @@ import redis.asyncio as aioredis
 
 from app.core.config import config
 from app.core.logger import logger
-from app.databases.base_client import BaseAsyncClient
+from app.core.base_client import BaseAsyncClient
 
 
 class RedisClient(BaseAsyncClient):
