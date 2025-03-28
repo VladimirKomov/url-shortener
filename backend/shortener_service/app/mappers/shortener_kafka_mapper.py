@@ -1,7 +1,3 @@
-from typing import cast
-
-from pydantic import HttpUrl
-
 from shared_models.kafka.url_validation import UrlValidationKafkaMessage
 
 
