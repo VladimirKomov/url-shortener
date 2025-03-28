@@ -1,9 +1,10 @@
 from datetime import datetime
 
-from sqlalchemy import func, Boolean, DateTime
+from sqlalchemy import func, DateTime, Enum
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.databases.postgresql import Base
+from shared_models.kafka.enums import ValidationStatus
 
 
 class ShortenedURL(Base):
@@ -14,7 +15,11 @@ class ShortenedURL(Base):
     short_code: Mapped[str] = mapped_column(unique=True, nullable=False, index=True)
     clicks: Mapped[int] = mapped_column(default=0)
 
-    is_valid: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    validation_status: Mapped[ValidationStatus] = mapped_column(
+        Enum(ValidationStatus),
+        default=ValidationStatus.PENDING,
+        nullable=False
+    )
     validated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(default=func.now())

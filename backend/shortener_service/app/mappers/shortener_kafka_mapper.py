@@ -10,7 +10,7 @@ class ValidationKafkaMapper:
     def to_kafka_message(short_code: str, original_url: str) -> UrlValidationKafkaMessage:
         return UrlValidationKafkaMessage(
             short_code=short_code,
-            original_url=cast(HttpUrl, original_url),
+            original_url=original_url,
         )
 
     @staticmethod

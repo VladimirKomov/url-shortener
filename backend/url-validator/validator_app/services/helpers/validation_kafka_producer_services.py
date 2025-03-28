@@ -20,7 +20,7 @@ class ValidationResultProducerService:
         client = await self._get_client()
 
         try:
-            await client.send_and_wait(config.KAFKA_TOPIC_VALIDATION_RESULT, result.model_dump())
+            await client.send_and_wait(config.KAFKA_TOPIC_VALIDATION_RESULT, result.model_dump(mode="json"))
             logger.info(f"Sent to Kafka: {result.model_dump()}")
             return True
         except Exception as e:
