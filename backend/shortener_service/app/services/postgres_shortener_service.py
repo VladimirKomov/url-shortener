@@ -5,7 +5,7 @@ from fastapi import BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import config
-from app.core.exceptions import URLNotFoundException
+from app.core.exceptions import URLNotFoundException, URLInvalidException, URLPendingException
 from app.interfaces.shortener_interfaces import AbstractShortenerService
 from app.mappers.shortener_mapper import ShortenerMapper
 from app.repositories.shortener_ropository import ShortenerRepository
@@ -32,18 +32,29 @@ class PostgresShortenerService(AbstractShortenerService):
             if not existing_url:
                 return short_code
 
+    async def _get_url_from_db(self, short_code: str) -> str:
+        url_obj = await self.repo.get_url_by_short_code(short_code)
+        if not url_obj:
+            raise URLNotFoundException()
+
+        if url_obj.validation_status == ValidationStatus.INVALID:
+            raise URLInvalidException()
+
+        elif url_obj.validation_status == ValidationStatus.PENDING and not config.ALLOW_REDIRECT_IF_PENDING:
+            raise URLPendingException()
+
+        return url_obj.original_url
+
     async def _get_url_from_cache_or_db(self, short_code: str, background_tasks: BackgroundTasks) -> str:
         """Get url from cache or db"""
         cached_url = await self.cache.get(short_code)
         if cached_url:
             return cached_url
 
-        url = await self.repo.get_url_by_short_code(short_code)
-        if not url:
-            raise URLNotFoundException()
+        url = await self._get_url_from_db(short_code)
 
-        await self._save_to_cache(short_code, url.original_url)
-        return url.original_url
+        await self._save_to_cache(short_code, url)
+        return url
 
     async def _save_to_cache(self, short_code: str, original_url: str) -> None:
         """Save to cache"""
@@ -74,7 +85,10 @@ class PostgresShortenerService(AbstractShortenerService):
         return ShortenerMapper.to_short_response(short_url, config.BASE_URL)
 
     async def update_validation_status(self, url_validation_result: UrlValidationResult) -> None:
-        """Update validation status"""
+        """Update validation status """
+        # deleting the link from the cache if it was there
+        await self.cache.delete(url_validation_result.short_code)
+
         await self.repo.set_url_valid_status(
             short_code=url_validation_result.short_code,
             validation_status=url_validation_result.validation_status,

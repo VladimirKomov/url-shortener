@@ -33,6 +33,16 @@ class URLNotFoundException(HTTPException):
         super().__init__(status_code=404, detail="Short URL not found")
 
 
+class URLInvalidException(HTTPException):
+    def __init__(self):
+        super().__init__(status_code=403, detail="This URL was marked as unsafe")
+
+
+class URLPendingException(HTTPException):
+    def __init__(self):
+        super().__init__(status_code=425, detail="This URL is still being validated")
+
+
 class URLAlreadyExistsException(HTTPException):
     def __init__(self):
         super().__init__(status_code=400, detail="This URL is already shortened")
