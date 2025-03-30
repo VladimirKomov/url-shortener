@@ -27,12 +27,40 @@ This project provides a backend service for shortening long URLs and tracking th
 - **Modular service boundaries** for core logic and background processing.
 - **Event-driven design** for safety and scalability.
 
+### 🗺️ System Architecture
+
+```mermaid
+graph TD
+   A[Client]
+   B[FastAPI Service]
+   C[PostgreSQL]
+   D[Redis]
+   E[Kafka Topic: url_validation]
+   F[Validator Service]
+   G[Google Safe Browsing]
+   H[MongoDB]
+   I[Kafka Topic: validation_result]
+
+   A -->|POST /shorten| B
+   A -->|GET /short_code| B
+
+   B -->|Save| C
+   B -->|Cache| D
+   B -->|Send to Kafka| E
+
+   E --> F
+   F -->|Validate| G
+   F -->|Store result| H
+   F -->|Send status to Kafka| I
+   I -->|Consume result| B
+```
+
 ---
 
 ## 🧱 Tech Stack
 
 | Layer           | Technology                             |
-|-----------------|----------------------------------------|
+|----------------|----------------------------------------|
 | **Backend**     | FastAPI, Pydantic, SQLAlchemy (async)  |
 | **Database**    | PostgreSQL (persistent), Redis (cache) |
 | **Validation**  | Kafka + MongoDB + Google Safe Browsing |
@@ -40,6 +68,26 @@ This project provides a backend service for shortening long URLs and tracking th
 | **DevOps**      | Docker, Kubernetes (planned)           |
 | **CI/CD**       | GitHub Actions (planned)               |
 | **Frontend**    | React + Axios (planned)                |
+
+---
+
+## 🧂 Project Structure
+
+```
+url-shortener/
+├── backend/
+│   ├── shared_models/         # Shared Pydantic schemas
+│   ├── shortener_service/     # Main FastAPI app
+│   └── url-validator/         # Microservice for URL validation
+├── docker/
+│   ├── docker-compose.kafka.yml
+│   ├── docker-compose.mongoDB.yml
+│   ├── docker-compose.postgres.yml
+│   └── docker-compose.redis.yml
+├── frontend/                  # (Planned) React frontend
+├── k8s/                       # (Planned) Kubernetes manifests
+└── README.md
+```
 
 ---
 
@@ -61,10 +109,10 @@ This project provides a backend service for shortening long URLs and tracking th
 
 This project uses a microservice architecture based on Kafka topics to decouple the main app from background processing. Each service handles a specific responsibility.
 
-| Microservice     | Description                                                                 |
-|------------------|-----------------------------------------------------------------------------|
-| `url-validator`  | Kafka consumer that validates URLs asynchronously using Google Safe Browsing |
-| (Planned) Stats  | Tracks usage analytics and aggregates them                                 |
+| Microservice      | Description                                                                 |
+|-------------------|-----------------------------------------------------------------------------|
+| `url-validator`   | Kafka consumer that validates URLs asynchronously via Google Safe Browsing. Stores results in MongoDB and returns status to the main app. |
+| (Planned) `stats-service` | Will consume Kafka events to generate and store usage analytics (click count, country, browser, etc.). |
 
 ---
 
@@ -91,7 +139,6 @@ cd backend/url-validator
 poetry install
 poetry run python validator_app/main.py
 ```
-
 💡 This service runs as a background daemon using asyncio and exits cleanly on `Ctrl+C`.
 
 ---
@@ -104,6 +151,7 @@ docker-compose up --build
 ```
 
 ### 2️⃣ **🧪 Local (manual)**
+```bash
 # Backend
 cd backend
 uvicorn app.main:app --reload
@@ -112,20 +160,24 @@ uvicorn app.main:app --reload
 cd frontend
 npm install
 npm start
+```
+
+---
 
 ## 🌐 API Endpoints
+
 ### 1️⃣ Shorten a URL
 **POST** `/shorten/`
 #### Request:
 ```json
 {
-  "long_url": "https://example.com"
+   "long_url": "https://example.com"
 }
 ```
 #### Response:
 ```json
 {
-  "short_url": "http://localhost:8000/go/a1b2c3"
+   "short_url": "http://localhost:8000/go/a1b2c3"
 }
 ```
 
@@ -138,18 +190,10 @@ npm start
 #### Response:
 ```json
 {
-  "short_code": "a1b2c3",
-  "clicks": 42
+   "short_code": "a1b2c3",
+   "clicks": 42
 }
 ```
-✅ Status  
-✅ Backend core functionality (API, DB, Redis, Kafka) – Implemented  
-✅ URL Validator microservice with Google Safe Browsing – ✅ Completed  
-🔄 Frontend and CI/CD – Planned  
-📈 Extensible architecture for analytics and LLM-based security – Designed
-
-🧠 Inspiration  
-This project showcases how to build a real-world, production-oriented system using modern Python, asynchronous architecture, and microservice communication via Kafka. It also demonstrates real-world use of external APIs for safe browsing validation.
 
 ---
 
@@ -176,3 +220,19 @@ The system uses a strongly-typed `Enum` to track the validation status of each s
 - The main service consumes this message and updates the corresponding record in PostgreSQL.
 
 > ✅ Thanks to the use of enums, introducing future statuses like `EXPIRED` or `REVIEW_REQUIRED` will be seamless and safe.
+
+---
+
+## ✅ Status
+
+- ✅ Backend core functionality (API, DB, Redis, Kafka) – **Implemented**
+- ✅ URL Validator microservice with Google Safe Browsing – **Completed**
+- 🔄 Frontend and CI/CD – **Planned**
+- 📈 Extensible architecture for analytics and LLM-based security – **Designed**
+
+---
+
+## 🧠 Inspiration
+
+This project showcases how to build a real-world, production-oriented system using modern Python, asynchronous architecture, and microservice communication via Kafka. It also demonstrates real-world use of external APIs for safe browsing validation.
+
