@@ -58,4 +58,3 @@ networks:
 volumes:
   kafka_data:
   zookeeper_data:
-

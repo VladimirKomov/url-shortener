@@ -2,9 +2,9 @@ import json
 
 import aiokafka
 
+from app.core.base_client import BaseAsyncClient
 from app.core.config import config
 from app.core.logger import logger
-from app.core.base_client import BaseAsyncClient
 
 
 class KafkaProducerClient(BaseAsyncClient):

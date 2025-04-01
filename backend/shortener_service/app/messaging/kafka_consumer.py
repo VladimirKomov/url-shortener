@@ -4,7 +4,6 @@ import json
 from aiokafka import AIOKafkaConsumer
 from aiokafka.structs import ConsumerRecord
 
-
 from app.core.config import config
 from app.core.logger import logger
 from app.dependencies.shortener_service import create_url_shortener_service

@@ -2,9 +2,9 @@ import json
 
 import aiokafka
 
+from validator_app.core.base_client import BaseAsyncClient
 from validator_app.core.config import config
 from validator_app.core.logger import logger
-from validator_app.core.base_client import BaseAsyncClient
 
 
 class KafkaProducerClient(BaseAsyncClient):
