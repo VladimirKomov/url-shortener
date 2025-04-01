@@ -21,6 +21,10 @@ class KafkaProducerClient(BaseAsyncClient):
                 try:
                     self.client = aiokafka.AIOKafkaProducer(
                         bootstrap_servers=config.KAFKA_URL,
+                        sasl_mechanism="PLAIN",
+                        sasl_plain_username=config.KAFKA_USERNAME,
+                        sasl_plain_password=config.KAFKA_PASSWORD,
+                        security_protocol="SASL_PLAINTEXT",
                         value_serializer=lambda v: json.dumps(v).encode("utf-8"),
                     )
                     await self.client.start()

@@ -22,6 +22,7 @@ class RedisClient(BaseAsyncClient):
                 try:
                     self.client = await aioredis.from_url(
                         config.REDIS_URL,
+                        password=config.REDIS_PASSWORD,
                         decode_responses=True
                     )
                     logger.info("Redis client created")
