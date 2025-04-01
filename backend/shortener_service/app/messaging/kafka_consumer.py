@@ -4,7 +4,6 @@ import json
 from aiokafka import AIOKafkaConsumer
 from aiokafka.structs import ConsumerRecord
 
-
 from app.core.config import config
 from app.core.logger import logger
 from app.dependencies.shortener_service import create_url_shortener_service
@@ -35,10 +34,6 @@ class KafkaConsumerClient:
                 config.KAFKA_TOPIC_VALIDATION_RESULT,
                 bootstrap_servers=config.KAFKA_URL,
                 group_id=config.KAFKA_GROUP_ID,
-                sasl_mechanism="PLAIN",
-                sasl_plain_username=config.KAFKA_USERNAME,
-                sasl_plain_password=config.KAFKA_PASSWORD,
-                security_protocol="SASL_PLAINTEXT",
                 enable_auto_commit=False,
                 auto_offset_reset="latest",
                 value_deserializer=lambda v: json.loads(v.decode("utf-8")),
