@@ -27,6 +27,13 @@ This project provides a backend service for shortening long URLs and tracking th
 - **Modular service boundaries** for core logic and background processing.
 - **Event-driven design** for safety and scalability.
 
+### 🆕 Updates (April 3, 2025)
+- 🐳 Added working Docker support for both `shortener_service` and `url-validator` microservices.
+- 🔧 Resolved issue with incorrect entrypoint in `url-validator` (Python module path).
+- 📦 Ensured proper `poetry.lock` syncing in Docker builds for dependency installation.
+- 🌐 Kafka connection bug fixed by updating host from `localhost` to `kafka` inside Docker.
+- ✅ Successfully validated URLs end-to-end via Kafka + MongoDB.
+
 ### 🗺️ System Architecture
 
 ```mermaid
@@ -83,7 +90,9 @@ url-shortener/
 │   ├── docker-compose.kafka.yml
 │   ├── docker-compose.mongoDB.yml
 │   ├── docker-compose.postgres.yml
-│   └── docker-compose.redis.yml
+│   ├── docker-compose.redis.yml
+│   └── docker-compose.yml
+│
 ├── frontend/                  # (Planned) React frontend
 ├── k8s/                       # (Planned) Kubernetes manifests
 └── README.md
@@ -148,6 +157,7 @@ poetry run python validator_app/main.py
 ### ⚡ Docker (recommended)
 ```bash
 docker-compose up --build
+> 📝 Use `--build` after `.env` changes to rebuild containers with updated values.
 ```
 
 ### 2️⃣ **🧪 Local (manual)**
