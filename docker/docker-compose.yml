@@ -1,0 +1,144 @@
+services:
+  # PostgreSQL
+  postgres:
+    image: postgres:16
+    container_name: url_shortener_db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  # Redis
+  redis:
+    image: redis:latest
+    container_name: url_shortener_redis-cache
+    restart: always
+    ports:
+      - "6379:6379"
+    command:
+      - redis-server
+      - --save
+      - "20"
+      - "1"
+      - --loglevel
+      - warning
+      - --maxmemory
+      - 100mb
+      - --maxmemory-policy
+      - allkeys-lru
+      - --appendfsync
+      - everysec
+      - --requirepass
+      - ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+
+  # MongoDB
+  mongo:
+    image: mongo:6.0
+    container_name: url_shortener_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+
+  # Zookeeper
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: url_shortener_zookeeper
+    restart: always
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      KAFKA_HEAP_OPTS: "-Xmx256M -Xms128M"
+    networks:
+      - kafka_network
+
+  # Kafka
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: url_shortener_kafka
+    restart: always
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}
+      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
+      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS}
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
+    depends_on:
+      - zookeeper
+    networks:
+      - kafka_network
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+  # Kafka UI
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka_ui
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    depends_on:
+      - kafka
+    networks:
+      - kafka_network
+
+  # FastAPI URL Shortener Service
+  shortener_service:
+    build:
+      context: ../backend
+      dockerfile: shortener_service/Dockerfile
+    container_name: shortener_service
+    restart: always
+    env_file:
+      - ../backend/shortener_service/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - kafka
+      - redis
+      - postgres
+    networks:
+      - kafka_network
+
+  # URL Validator (Kafka Consumer)
+  url_validator:
+    build:
+      context: ../backend
+      dockerfile: url-validator/Dockerfile
+    container_name: url_validator
+    restart: always
+    env_file:
+      - ../backend/url-validator/.env
+    depends_on:
+      - kafka
+      - mongo
+    networks:
+      - kafka_network
+
+networks:
+  kafka_network:
+    driver: bridge
+
+volumes:
+  pg_data:
+  redis_data:
+  mongo_data:
+  kafka_data:

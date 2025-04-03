@@ -3,7 +3,7 @@ name = "backend"
 version = "0.1.0"
 description = ""
 authors = ["VladimirK"]
-readme = "README.md"
+#readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -17,7 +17,7 @@ python-dotenv = "^1.0.1"
 aioredis = "^2.0.1"
 aiokafka = "^0.12.0"
 # adding common models
-shared-models = { path = "../shared_models", develop = true }
+shared-models = { path = "shared_models", develop = true }
 
 
 [tool.poetry.group.dev.dependencies]
