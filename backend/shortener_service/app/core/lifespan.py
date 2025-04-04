@@ -14,12 +14,12 @@ async def lifespan(_: FastAPI):
     """Connect to Redis and Kafka before starting the server and close them after"""
     try:
         # Redis not critical, responsible for cache, just logging
-        await retry_connect(redis_client.connect, name="Redis")
+        await retry_connect(redis_client._connect, name="Redis")
     except Exception as e:
         logger.warning(f"Redis unavailable, continuing without cache: {e}")
     try:
         # Try to create connections, if impossible, we call an error and stop the application
-        await retry_connect(kafka_producer_client.connect, name="Kafka Producer")
+        await retry_connect(kafka_producer_client._connect, name="Kafka Producer")
         await retry_connect(kafka_consumer_client.start_listening, name="Kafka Consumer")
     except Exception as e:
         logger.critical(f"Startup failed: {e}")

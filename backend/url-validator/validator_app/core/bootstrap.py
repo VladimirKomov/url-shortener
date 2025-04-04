@@ -24,8 +24,8 @@ class AppContainer:
 
     async def init(self):
         # Low-level clients с retry
-        await retry_connect(self.mongo_client.connect, name="MongoDB")
-        await retry_connect(self.kafka_producer.connect, name="Kafka Producer")
+        await retry_connect(self.mongo_client.strict_connect(), name="MongoDB")
+        await retry_connect(self.kafka_producer.strict_connect, name="Kafka Producer")
 
         # High-level components
         self.mongo_repository = UrlValidationRepository(self.mongo_client.client)

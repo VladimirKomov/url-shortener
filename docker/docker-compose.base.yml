@@ -1,0 +1,12 @@
+# project name
+name: url-shortener
+
+volumes:
+  pg_data:
+  redis_data:
+  mongo_data:
+  kafka_data:
+
+networks:
+  kafka_network:
+    driver: bridge
