@@ -1,0 +1,34 @@
+# project name
+name: url-shortener
+
+services:
+  shortener_service:
+    build:
+      context: ../backend
+      dockerfile: shortener_service/Dockerfile
+    container_name: shortener_service
+    restart: always
+    env_file:
+      - ../backend/shortener_service/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - kafka
+      - redis
+      - postgres
+    networks:
+      - kafka_network
+
+  url_validator:
+    build:
+      context: ../backend
+      dockerfile: url-validator/Dockerfile
+    container_name: url_validator
+    restart: always
+    env_file:
+      - ../backend/url-validator/.env
+    depends_on:
+      - kafka
+      - mongo
+    networks:
+      - kafka_network

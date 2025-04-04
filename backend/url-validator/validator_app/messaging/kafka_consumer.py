@@ -22,9 +22,9 @@ class KafkaConsumerClient:
         self._task = None
         self._running = False
 
-    async def start(self):
+    async def start(self) -> None:
         """
-        Create and start the Kafka consumer client.
+        Create and start the Kafka consumer
         """
         if self.client is not None:
             return
@@ -43,8 +43,9 @@ class KafkaConsumerClient:
         except Exception as e:
             logger.error(f"Failed to create Kafka consumer: {e}")
             self.client = None
+            raise
 
-    async def stop(self):
+    async def stop(self) -> None:
         """
         Stop and clean up the Kafka consumer client.
         """
@@ -97,7 +98,7 @@ class KafkaConsumerClient:
         except Exception as e:
             logger.error(f"Error processing message: {e}")
 
-    async def shutdown(self):
+    async def shutdown(self) -> None:
         """
         Cancel the background task and shut down the consumer gracefully.
         """

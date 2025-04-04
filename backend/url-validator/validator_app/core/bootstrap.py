@@ -1,4 +1,5 @@
 from validator_app.core.config import config
+from validator_app.core.utils import retry_connect
 from validator_app.repositories.url_validation_repository import UrlValidationRepository
 from validator_app.services.helpers.validation_google_service import GoogleUrlChecker
 from validator_app.services.helpers.validation_kafka_producer_services import ValidationResultProducerService
@@ -22,9 +23,9 @@ class AppContainer:
         self.kafka_consumer: KafkaConsumerClient | None = None
 
     async def init(self):
-        # Connect low-level clients
-        await self.mongo_client.connect()
-        await self.kafka_producer.connect()
+        # Low-level clients с retry
+        await retry_connect(self.mongo_client.strict_connect(), name="MongoDB")
+        await retry_connect(self.kafka_producer.strict_connect, name="Kafka Producer")
 
         # High-level components
         self.mongo_repository = UrlValidationRepository(self.mongo_client.client)
@@ -39,7 +40,7 @@ class AppContainer:
         )
 
         self.kafka_consumer = KafkaConsumerClient(self.validator_service)
-        await self.kafka_consumer.start_listening()
+        await retry_connect(self.kafka_consumer.start_listening, name="Kafka Consumer")
 
     async def shutdown(self):
         if self.kafka_consumer:
@@ -48,5 +49,5 @@ class AppContainer:
         await self.mongo_client.close()
 
 
-# глобальный контейнер
+# global container
 app_container = AppContainer()
