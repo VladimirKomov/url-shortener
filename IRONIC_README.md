@@ -1,32 +1,54 @@
-🧪 Started a pet project: a URL shortener, but make it microservices and anxiety. Everything hurts, and that’s the architecture.
+🔗 URL Shortener — but make it microservices
+A pet project where a "simple" URL shortener spiraled into a distributed system with trust issues, async dreams, and Kafka-induced conversations.
 
-🎬 Title: “FastAPI & Kafka: Into the Abyss”
+🧱 Tech Stack
+FastAPI – async Python, because the pain should be fast.
 
-🧩 Tech Stack:
+PostgreSQL + Redis – one remembers everything, the other forgets instantly.
 
-FastAPI — because Flask is for the sane, and I chose suffering.
+Kafka – so microservices can overshare their emotions.
 
-PostgreSQL + Redis — the classic duo: one forgets nothing, the other forgets everything too quickly.
+MongoDB – a journal of suspicious links.
 
-Kafka — so my services can scream into the void and hope someone’s listening.
+Google Safe Browsing API – moral compass and digital doorman.
 
-MongoDB — the emotional journal for suspicious URLs.
+Node.js (incoming) – a stats microservice to count clicks, browsers, and existential dread.
 
-Google Safe Browsing — our spiritual guide and URL bouncer.
+Kubernetes (on the horizon) – because chaos must be orchestrated.
 
-🐙 Architecture in a nutshell: — User submits a URL.
-— I don’t trust it. Kafka doesn’t either.
-— The URL gets validated by a microservice that reads too much Google documentation.
-— Redis pretends it remembers things.
-— MongoDB records the moral failings of the link.
+🎯 Features (So Far)
+/shorten and /go endpoints
 
-⚙️ Project status: — It technically works... but only in my local hell.
-— Frontend is still being imagined.
-— CI/CD is currently “CI… someday”.
+Asynchronous URL validation
 
-🧘‍♂️ What I’ve learned: — Microservices are like teenagers: independent but constantly yelling at each other through Kafka.
-— Redis lies to your face, but it lies fast.
-— “URL shortener” sounds simple until you build it like a low-budget Netflix backend.
+Kafka, Redis, and MongoDB are all on speaking terms
 
-📦 Repo here: [[link](https://github.com/VladimirKomov/url-shortener)]
-(Warning: may shorten your confidence.)
+Dockerized – and not actively on fire
+
+It technically works... but only in my local hell
+
+Frontend is still being imagined
+
+CI/CD is currently “CI… someday”
+
+🛠 Planned
+Node.js analytics microservice (to spy on usage metrics like a nerdy NSA)
+
+CI/CD setup (if I don’t flee into the woods first)
+
+Kubernetes deployment – because YAML is a lifestyle
+
+React frontend – eventually, maybe, one day
+
+🧘‍♂️ What I’ve Learned
+Microservices are like teenagers: independent, loud, and constantly yelling at each other through Kafka
+
+Redis lies to your face – but it lies fast
+
+“URL shortener” sounds simple... until you build it like a low-budget Netflix backend
+
+📎 Repo
+👉 github.com/VladimirKomov/url-shortener
+(If it loads, that’s already a win.)
+
+I'm not just shortening URLs — I'm lengthening my resume and extending the number of technologies I can suffer through.
