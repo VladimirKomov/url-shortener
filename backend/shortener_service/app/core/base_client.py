@@ -38,7 +38,7 @@ class BaseAsyncClient(ABC):
         """ Close the connection """
         pass
 
-    async def connect(self) -> None:
+    async def _connect(self) -> None:
         """ Initialize connection if not already connected or lost """
         if self.client is None:
             await self._create_client()
@@ -51,9 +51,30 @@ class BaseAsyncClient(ABC):
                 await self._close_client()
                 await self._create_client()
 
+    async def strict_connect(self) -> None:
+        """Hardwire: Throws exception on failure"""
+        try:
+            await self._connect()
+            if self.client is None:
+                raise ConnectionError(f"{self.__class__.__name__} is not available!")
+        except Exception as e:
+            logger.critical(f"{self.__class__.__name__} failed to connect: {e}")
+            raise
+
+    async def safe_connect(self) -> bool:
+        """Soft connection: logs errors but does not throw exceptions"""
+        try:
+            await self._connect()
+            if self.client is None:
+                raise ConnectionError("Client is None")
+            return True
+        except Exception as e:
+            logger.warning(f"{self.__class__.__name__} safe_connect failed: {e}")
+            return False
+
     async def get_client(self) -> ClientType:
         """ Get the client """
-        await self.connect()
+        await self._connect()
         if self.client is None:
             raise ConnectionError(f"{self.__class__.__name__} is not available!")
         return self.client
@@ -61,3 +82,4 @@ class BaseAsyncClient(ABC):
     async def close(self) -> None:
         """ Close the connection """
         await self._close_client()
+        logger.info(f"{self.__class__.__name__} connection closed")

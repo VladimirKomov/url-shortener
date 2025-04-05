@@ -43,6 +43,7 @@ class KafkaConsumerClient:
         except Exception as e:
             logger.error(f"Failed to create Kafka consumer: {e}")
             self.client = None
+            raise
 
     async def stop(self):
         """

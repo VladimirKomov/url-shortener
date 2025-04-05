@@ -4,7 +4,7 @@ COMPOSE=docker-compose \
   -f docker/docker-compose.redis.yml \
   -f docker/docker-compose.mongoDB.yml \
   -f docker/docker-compose.kafka.yml \
-  -f docker/docker-compose.services.yml
+  -f docker/docker-compose.services.yml \
 
 up:
 	$(COMPOSE) up --build

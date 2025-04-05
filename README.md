@@ -87,14 +87,16 @@ url-shortener/
 │   ├── shortener_service/     # Main FastAPI app
 │   └── url-validator/         # Microservice for URL validation
 ├── docker/
+│   ├── docker-compose.base.yml
 │   ├── docker-compose.kafka.yml
 │   ├── docker-compose.mongoDB.yml
 │   ├── docker-compose.postgres.yml
 │   ├── docker-compose.redis.yml
-│   └── docker-compose.yml
+│   └── docker-compose.services.yml
 │
 ├── frontend/                  # (Planned) React frontend
 ├── k8s/                       # (Planned) Kubernetes manifests
+├── Makefile
 └── README.md
 ```
 
@@ -156,20 +158,8 @@ poetry run python validator_app/main.py
 
 ### ⚡ Docker (recommended)
 ```bash
-docker-compose up --build
-> 📝 Use `--build` after `.env` changes to rebuild containers with updated values.
-```
-
-### 2️⃣ **🧪 Local (manual)**
-```bash
-# Backend
-cd backend
-uvicorn app.main:app --reload
-
-# Frontend (when ready)
-cd frontend
-npm install
-npm start
+make up 
+> 📝 Use `.env` changes to rebuild containers with updated values.
 ```
 
 ---
