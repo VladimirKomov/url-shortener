@@ -74,10 +74,9 @@ class BaseAsyncClient(ABC):
     async def get_client(self) -> ClientType:
         """ Get the client """
         await self._connect()
-        if self.client is None:
-            raise ConnectionError(f"{self.__class__.__name__} is not available!")
         return self.client
 
     async def close(self) -> None:
         """ Close the connection """
         await self._close_client()
+        logger.info(f"{self.__class__.__name__} connection closed")

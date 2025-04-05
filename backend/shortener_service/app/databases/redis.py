@@ -29,6 +29,7 @@ class RedisClient(BaseAsyncClient):
                 except Exception as e:
                     logger.error(f"Error creating Redis client: {e}")
                     self.client = None
+                    raise
 
     async def _close_client(self) -> None:
         """ Close the Redis connection """

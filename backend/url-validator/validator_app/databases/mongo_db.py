@@ -28,6 +28,7 @@ class MongoDBClient(BaseAsyncClient):
                 except Exception as e:
                     logger.error(f"Error creating MongoDB client: {e}")
                     self.client = None
+                    raise
 
     async def _close_client(self) -> None:
         """ Close the MongoDB connection """

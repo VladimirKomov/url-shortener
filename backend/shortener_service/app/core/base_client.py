@@ -82,3 +82,4 @@ class BaseAsyncClient(ABC):
     async def close(self) -> None:
         """ Close the connection """
         await self._close_client()
+        logger.info(f"{self.__class__.__name__} connection closed")
