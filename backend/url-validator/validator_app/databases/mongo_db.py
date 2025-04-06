@@ -10,8 +10,11 @@ class MongoDBClient(BaseAsyncClient):
     async def _ping(self) -> bool:
         """ Check connection """
         try:
-            return await self.client.admin.command('ping')
-        except Exception:
+            result = await self.client.admin.command('ping')
+            logger.debug(f"Ping result: {result}")
+            return result.get("ok") == 1.0
+        except Exception as e:
+            logger.warning(f"Ping failed with error: {e}")
             return False
 
     async def _create_client(self) -> None:

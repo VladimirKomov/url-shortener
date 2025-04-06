@@ -11,8 +11,11 @@ class RedisClient(BaseAsyncClient):
     async def _ping(self) -> bool:
         """ Check Redis connection """
         try:
-            return await self.client.ping()
-        except Exception:
+            result = await self.client.ping()
+            logger.debug(f"Ping result: {result}")
+            return str(result).upper() == "PONG"
+        except Exception as e:
+            logger.warning(f"Ping failed with error: {e}")
             return False
 
     async def _create_client(self) -> None:

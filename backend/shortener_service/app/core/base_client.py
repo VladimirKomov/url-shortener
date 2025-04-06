@@ -42,6 +42,8 @@ class BaseAsyncClient(ABC):
         """ Initialize connection if not already connected or lost """
         if self.client is None:
             await self._create_client()
+            if not await self._ping():
+                raise ConnectionError("Ping failed after client creation")
         else:
             try:
                 if not await self._ping():
@@ -50,6 +52,8 @@ class BaseAsyncClient(ABC):
                 logger.error(f"{self.__class__.__name__} connection error: {e}. Reconnecting...")
                 await self._close_client()
                 await self._create_client()
+                if not await self._ping():
+                    raise ConnectionError("Ping failed after reconnect")
 
     async def strict_connect(self) -> None:
         """Hardwire: Throws exception on failure"""
@@ -58,7 +62,7 @@ class BaseAsyncClient(ABC):
             if self.client is None:
                 raise ConnectionError(f"{self.__class__.__name__} is not available!")
         except Exception as e:
-            logger.critical(f"{self.__class__.__name__} failed to connect: {e}")
+            logger.warning(f"{self.__class__.__name__} failed to connect: {e}")
             raise
 
     async def safe_connect(self) -> bool:
@@ -75,8 +79,6 @@ class BaseAsyncClient(ABC):
     async def get_client(self) -> ClientType:
         """ Get the client """
         await self._connect()
-        if self.client is None:
-            raise ConnectionError(f"{self.__class__.__name__} is not available!")
         return self.client
 
     async def close(self) -> None:
