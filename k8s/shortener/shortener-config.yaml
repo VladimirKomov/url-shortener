@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shortener-config
+data:
+  REDIS_URL: "redis://:redis@host.docker.internal:6379"
+  KAFKA_URL: "host.docker.internal:9092"
+  KAFKA_TOPIC_URL_VALIDATION: "url_validation_requests"
+  KAFKA_GROUP_ID: "url_validator_group"
+  KAFKA_TOPIC_VALIDATION_RESULT: "url_validation_result"
+  DEBUG: "True"
+  ALLOW_REDIRECT_IF_PENDING: "True"
+  BASE_URL: "http://127.0.0.1:8000/api/v1"
