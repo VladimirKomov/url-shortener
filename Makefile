@@ -7,7 +7,7 @@ COMPOSE := docker-compose \
   -f docker/docker-compose.kafka.yml \
   -f docker/docker-compose.services.yml
 
-# Basic команды
+# Basic
 up:
 	$(COMPOSE) up --build
 
@@ -34,3 +34,27 @@ rebuild:
 
 validate:
 	$(COMPOSE) config
+
+
+# for PowerShell
+# $env:DOCKER_USER = "your_name"
+# for bash
+# export DOCKER_USER=your_name
+DOCKER_USER ?= unknown
+
+
+build-shortener:
+	docker build -f backend/shortener_service/Dockerfile -t $(DOCKER_USER)/shortener-service:latest backend
+
+push-shortener:
+	docker push $(DOCKER_USER)/shortener-service:latest
+
+build-validator:
+	docker build -f backend/url-validator/Dockerfile -t $(DOCKER_USER)/url-validator:latest backend
+
+push-validator:
+	docker push $(DOCKER_USER)/url-validator:latest
+
+build-all: build-shortener build-validator
+
+push-all: push-shortener push-validator
