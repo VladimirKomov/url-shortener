@@ -27,4 +27,4 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - kafka_network
+      - url_shortener_network

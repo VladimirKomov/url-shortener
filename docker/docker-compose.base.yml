@@ -8,5 +8,5 @@ volumes:
   kafka_data:
 
 networks:
-  kafka_network:
+  url_shortener_network:
     driver: bridge

@@ -60,7 +60,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       KAFKA_HEAP_OPTS: "-Xmx256M -Xms128M"
     networks:
-      - kafka_network
+      - url_shortener_network
 
   # Kafka
   kafka:
@@ -81,7 +81,7 @@ services:
     depends_on:
       - zookeeper
     networks:
-      - kafka_network
+      - url_shortener_network
     volumes:
       - kafka_data:/var/lib/kafka/data
 
@@ -98,7 +98,7 @@ services:
     depends_on:
       - kafka
     networks:
-      - kafka_network
+      - url_shortener_network
 
   # FastAPI URL Shortener Service
   shortener_service:
@@ -116,7 +116,7 @@ services:
       - redis
       - postgres
     networks:
-      - kafka_network
+      - url_shortener_network
 
   # URL Validator (Kafka Consumer)
   url_validator:
@@ -131,10 +131,10 @@ services:
       - kafka
       - mongo
     networks:
-      - kafka_network
+      - url_shortener_network
 
 networks:
-  kafka_network:
+  url_shortener_network:
     driver: bridge
 
 volumes:

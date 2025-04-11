@@ -13,7 +13,7 @@ class RedisClient(BaseAsyncClient):
         try:
             result = await self.client.ping()
             logger.debug(f"Ping result: {result}")
-            return str(result).upper() == "PONG"
+            return result is True
         except Exception as e:
             logger.warning(f"Ping failed with error: {e}")
             return False

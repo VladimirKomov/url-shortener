@@ -17,7 +17,5 @@ class Config:
     KAFKA_TOPIC_URL_VALIDATION: str = os.getenv("KAFKA_TOPIC_URL_VALIDATION")
     KAFKA_GROUP_ID: str = os.getenv("KAFKA_GROUP_ID")
     KAFKA_TOPIC_VALIDATION_RESULT: str = os.getenv("KAFKA_TOPIC_VALIDATION_RESULT")
-    KAFKA_USERNAME: str = os.getenv("KAFKA_USERNAME")
-    KAFKA_PASSWORD: str = os.getenv("KAFKA_PASSWORD")
 
 config = Config()
