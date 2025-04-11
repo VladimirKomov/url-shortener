@@ -8,5 +8,4 @@
 /secrets/kafka_server_jaas.conf
 /k8s/shortener/secret.yaml
 /k8s/url-validator/secret.yaml
-/k8s/shortener/secret.yaml
-/k8s/url-validator/secret.yaml
+
