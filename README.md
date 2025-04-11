@@ -1,38 +1,18 @@
-# 🔗 URL Shortener API
+# 🔗 URL Shortener with Asynchronous URL Validation
 
-A scalable, event-driven URL shortening service inspired by Bit.ly. Built with a modern backend stack and designed for performance, reliability, and extensibility.
-
----
-
-## 📌 Description
-
-This project provides a backend service for shortening long URLs and tracking their usage statistics. It is designed with production-grade technologies and patterns, including **asynchronous processing**, **event streaming**, **microservices**, and **URL safety validation** using Google's Safe Browsing API.
+This project is a modern microservice-based URL shortening platform. It supports asynchronous URL safety validation using Kafka and Google Safe Browsing. Built with FastAPI, PostgreSQL, Redis, Kafka, and MongoDB, the system is deployable via Docker and Kubernetes.
 
 ---
 
 ## 🚀 Features
 
-### ⚙️ Core Functionality (Backend)
-- `POST /shorten/` – Shorten a long URL.
-- `GET /go/{short_code}/` – Redirect to the original URL.
-- `GET /stats/{short_code}/` – Return usage statistics (click count).
-- 🔐 Asynchronous **URL validation** through Kafka + Google Safe Browsing.
-- ⚠️ New URLs are **inactive by default** until validated as safe.
+- Generate short URLs from long ones.
+- Redirect users using short links.
+- Track click statistics.
+- Asynchronously validate URLs with Google Safe Browsing via Kafka.
+- Mark suspicious URLs as inactive until verified.
 
-### 🧠 Architecture Highlights
-- **Asynchronous FastAPI backend** with `asyncpg` and SQLAlchemy.
-- **Redis caching** to accelerate repeated URL lookups and reduce DB load.
-- **Kafka-based microservices** for decoupled validation, logging, and analytics.
-- **MongoDB** used by the validator microservice for audit/logging.
-- **Modular service boundaries** for core logic and background processing.
-- **Event-driven design** for safety and scalability.
-
-### 🆕 Updates (April 3, 2025)
-- 🐳 Added working Docker support for both `shortener_service` and `url-validator` microservices.
-- 🔧 Resolved issue with incorrect entrypoint in `url-validator` (Python module path).
-- 📦 Ensured proper `poetry.lock` syncing in Docker builds for dependency installation.
-- 🌐 Kafka connection bug fixed by updating host from `localhost` to `kafka` inside Docker.
-- ✅ Successfully validated URLs end-to-end via Kafka + MongoDB.
+---
 
 ### 🗺️ System Architecture
 
@@ -64,17 +44,16 @@ graph TD
 
 ---
 
-## 🧱 Tech Stack
+## 🧰 Tech Stack
 
-| Layer           | Technology                             |
-|----------------|----------------------------------------|
-| **Backend**     | FastAPI, Pydantic, SQLAlchemy (async)  |
-| **Database**    | PostgreSQL (persistent), Redis (cache) |
-| **Validation**  | Kafka + MongoDB + Google Safe Browsing |
-| **Messaging**   | Kafka                                  |
-| **DevOps**      | Docker, Kubernetes (planned)           |
-| **CI/CD**       | GitHub Actions (planned)               |
-| **Frontend**    | React + Axios (planned)                |
+| Layer         | Tech Stack                                                                 |
+|--------------|-----------------------------------------------------------------------------|
+| Backend       | [FastAPI](https://fastapi.tiangolo.com/), [SQLAlchemy](https://sqlalchemy.org/), [Pydantic](https://docs.pydantic.dev/) |
+| Databases     | [PostgreSQL](https://www.postgresql.org/), [Redis](https://redis.io/), [MongoDB](https://www.mongodb.com/) |
+| Messaging     | [Kafka](https://kafka.apache.org/)                                          |
+| DevOps        | [Docker](https://www.docker.com/), [Kubernetes](https://kubernetes.io/)     |
+| CI/CD         | GitHub Actions *(planned)*                                                  |
+| Frontend      | React *(planned)*                                                           |
 
 ---
 
@@ -95,144 +74,140 @@ url-shortener/
 │   └── docker-compose.services.yml
 │
 ├── frontend/                  # (Planned) React frontend
-├── k8s/                       # (Planned) Kubernetes manifests
+├── k8s/                       # Kubernetes manifests
+│   ├── shortener/
+│   │   ├── configmap.yaml
+│   │   ├── deployment.yaml
+│   │   ├── secret.yaml
+│   │   ├── secret.yaml.example
+│   │   └── service.yaml
+│   └── url-validator/
+│       ├── configmap.yaml
+│       ├── deployment.yaml
+│       ├── secret.yaml
+│       └── secret.yaml.example
 ├── Makefile
 └── README.md
 ```
 
 ---
 
-## 🧪 URL Validation Workflow
+## 🔐 Configuration & Secrets
 
-1. User submits a URL to shorten.
-2. It's stored with `is_valid = False` and a unique short code.
-3. The original URL is sent to a Kafka topic.
-4. The `url-validator` microservice:
-   - Receives the message.
-   - Checks the URL with Google Safe Browsing.
-   - Saves the result in MongoDB.
-   - Sends back a Kafka message with validation status.
-5. The main service consumes the result and updates the original record.
+### Local Development
 
----
+Use `.env.example` files per service:
 
-## 📦 Microservices Overview
-
-This project uses a microservice architecture based on Kafka topics to decouple the main app from background processing. Each service handles a specific responsibility.
-
-| Microservice      | Description                                                                 |
-|-------------------|-----------------------------------------------------------------------------|
-| `url-validator`   | Kafka consumer that validates URLs asynchronously via Google Safe Browsing. Stores results in MongoDB and returns status to the main app. |
-| (Planned) `stats-service` | Will consume Kafka events to generate and store usage analytics (click count, country, browser, etc.). |
-
----
-
-## 🛡️ `url-validator` Microservice
-
-### 🧠 Responsibility:
-This service listens to the `url_validation` Kafka topic and validates incoming URLs via the **Google Safe Browsing API**. It stores validation results in **MongoDB** and publishes the results back via Kafka.
-
-### 📁 Key Technologies:
-- `aiokafka` – Kafka consumer
-- `motor` – async MongoDB client
-- `Google Safe Browsing API` – to detect malware, phishing, etc.
-- `shared-models` – reusable Pydantic models shared across services
-
-### 🛠️ How It Works:
-1. Consumes messages from Kafka with short_code + original_url.
-2. Sends the URL to Google Safe Browsing.
-3. Saves the result (safe/threat types/etc.) to MongoDB.
-4. Sends the result back to Kafka so the main service can mark the URL as active.
-
-### ▶️ To run it manually:
 ```bash
-cd backend/url-validator
-poetry install
-poetry run python validator_app/main.py
+cp .env.example .env  # then edit with your local credentials
 ```
-💡 This service runs as a background daemon using asyncio and exits cleanly on `Ctrl+C`.
 
----
+### Kubernetes Secrets
 
-## 📦 Running the Service
+Secrets are defined in `secret.yaml.example` files. Copy and fill real values:
 
-### ⚡ Docker (recommended)
 ```bash
-make up 
-> 📝 Use `.env` changes to rebuild containers with updated values.
+cp k8s/shortener/secret.yaml.example k8s/shortener/secret.yaml
+kubectl apply -f k8s/shortener/secret.yaml
+```
+
+Repeat for other services as needed.
+
+---
+
+## ☸️ Kubernetes Deployment
+
+```bash
+# Shortener Service
+kubectl apply -f k8s/shortener/configmap.yaml
+kubectl apply -f k8s/shortener/secret.yaml
+kubectl apply -f k8s/shortener/deployment.yaml
+kubectl apply -f k8s/shortener/service.yaml
+
+# URL Validator
+kubectl apply -f k8s/url-validator/configmap.yaml
+kubectl apply -f k8s/url-validator/secret.yaml
+kubectl apply -f k8s/url-validator/deployment.yaml
+```
+
+### Access the API
+
+- NodePort: `http://localhost:30080/api/v1`
+- Ingress (optional): `http://shortener.local/api/v1`
+
+### Cleanup
+
+```bash
+kubectl delete -f k8s/
 ```
 
 ---
 
-## 🌐 API Endpoints
+## 🧪 API Usage
 
-### 1️⃣ Shorten a URL
-**POST** `/shorten/`
-#### Request:
+### POST /shorten/
+
+```json
+{ "long_url": "https://example.com" }
+```
+
+→ Response:
+
+```json
+{ "short_url": "http://localhost:30080/go/abc123" }
+```
+
+### GET /go/{short_code} → Redirect
+
+### GET /stats/{short_code}
+
 ```json
 {
-   "long_url": "https://example.com"
-}
-```
-#### Response:
-```json
-{
-   "short_url": "http://localhost:8000/go/a1b2c3"
-}
-```
-
-### 2️⃣ Redirect to Original URL
-**GET** `/go/{short_code}/`
-- Redirects the user to the original long URL.
-
-### 3️⃣ Get URL Statistics
-**GET** `/stats/{short_code}/`
-#### Response:
-```json
-{
-   "short_code": "a1b2c3",
-   "clicks": 42
+  "short_code": "abc123",
+  "clicks": 42
 }
 ```
 
 ---
 
-## 🔁 URL Validation Status
+## 🔁 URL Validation Lifecycle
 
-The system uses a strongly-typed `Enum` to track the validation status of each shortened URL. This approach provides flexibility and ensures type safety for future status extensions.
+1. Shorten URL → stored with status `PENDING`
+2. Kafka → `url_validation_requests`
+3. Validator:
+   - uses Google Safe Browsing
+   - stores result in MongoDB
+   - publishes result to Kafka
+4. Main service consumes it → updates DB
 
-### 🧩 Possible statuses:
-
-| Status     | Description                                         |
-|------------|-----------------------------------------------------|
-| `PENDING`  | The URL is awaiting validation                      |
-| `VALID`    | The URL has been validated and is safe              |
-| `INVALID`  | The URL is considered unsafe (e.g., phishing, malware) |
-
-> By default, all newly created short links receive the `PENDING` status and are updated after validation is complete.
-
-### ⚙️ Validation Logic
-
-- When a user shortens a URL, it is stored in the database with the status `PENDING`.
-- A Kafka message is sent to the validator service.
-- The validator uses Google's Safe Browsing API to assess the URL.
-- After validation, it sends a Kafka message back with the status (`VALID` or `INVALID`).
-- The main service consumes this message and updates the corresponding record in PostgreSQL.
-
-> ✅ Thanks to the use of enums, introducing future statuses like `EXPIRED` or `REVIEW_REQUIRED` will be seamless and safe.
+| Status     | Meaning                        |
+|------------|--------------------------------|
+| `PENDING`  | Awaiting validation            |
+| `VALID`    | Confirmed safe                 |
+| `INVALID`  | Found malicious/suspicious     |
 
 ---
 
-## ✅ Status
+## ⚙️ Makefile Commands
 
-- ✅ Backend core functionality (API, DB, Redis, Kafka) – **Implemented**
-- ✅ URL Validator microservice with Google Safe Browsing – **Completed**
-- 🔄 Frontend and CI/CD – **Planned**
-- 📈 Extensible architecture for analytics and LLM-based security – **Designed**
+```bash
+make build-all         # Build Docker images
+make push-all          # Push images to registry
+make restart-services  # Restart stack via docker-compose
+make deploy-shortener  # Apply shortener to Kubernetes
+make deploy-validator  # Apply validator to Kubernetes
+```
 
 ---
 
-## 🧠 Inspiration
+## ✅ Project Status
 
-This project showcases how to build a real-world, production-oriented system using modern Python, asynchronous architecture, and microservice communication via Kafka. It also demonstrates real-world use of external APIs for safe browsing validation.
+- ✅ Backend, Kafka, Redis, Mongo — working
+- ✅ URL validation pipeline — done
+- ⚙️ CI/CD, Frontend — coming soon
 
+---
+
+## 💡 Inspiration
+
+A practical, scalable example of microservices, asynchronous architecture, and event-driven pipelines in Python. Great for learning, demonstrating dev skills, or extending into real products.
