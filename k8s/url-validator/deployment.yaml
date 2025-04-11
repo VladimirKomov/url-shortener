@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: url-validator
+  labels:
+    app: url-validator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: url-validator
+  template:
+    metadata:
+      labels:
+        app: url-validator
+    spec:
+      containers:
+        - name: url-validator
+          image: redddy/url-validator:latest
+          envFrom:
+            - configMapRef:
+                name: validator-config
+            - secretRef:
+                name: validator-secret
