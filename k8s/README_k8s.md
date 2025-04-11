@@ -4,7 +4,7 @@ This directory contains Kubernetes manifests for deploying the `shortener-servic
 
 ---
 
-## 🗂 Structure
+## 📂 Structure
 
 ```
 k8s/
@@ -12,7 +12,8 @@ k8s/
 │   ├── configmap.yaml        # Environment variables
 │   ├── deployment.yaml       # Deployment spec
 │   ├── secret.yaml           # Secrets like DB password
-│   └── service.yaml          # Exposes the service via NodePort or ClusterIP
+│   ├── service.yaml          # Exposes the service via NodePort or ClusterIP
+│   └── ingress.yaml          # Ingress definition for /api/v1 routing
 ├── url-validator/
 │   ├── configmap.yaml
 │   ├── deployment.yaml
@@ -31,6 +32,7 @@ kubectl apply -f shortener/secret.yaml
 kubectl apply -f shortener/configmap.yaml
 kubectl apply -f shortener/deployment.yaml
 kubectl apply -f shortener/service.yaml
+kubectl apply -f shortener/ingress.yaml
 ```
 
 ### 2. ✅ Deploy `url-validator`
@@ -45,17 +47,48 @@ kubectl apply -f url-validator/deployment.yaml
 
 ## 🌍 Accessing the API
 
-If using **NodePort** (e.g. `30080`), access the API like this:
+### If using **NodePort** (e.g. `30080`)
 
 ```
 http://localhost:30080/api/v1
 ```
 
-If using **Ingress** (e.g. with `shortener.local`):
+### If using **Ingress** with domain-based routing
 
-```
+```plaintext
 http://shortener.local/api/v1
 ```
+
+➡️ Add `127.0.0.1 shortener.local` to your `/etc/hosts` or `C:\Windows\System32\drivers\etc\hosts`.
+
+---
+
+## 🎯 Advanced Ingress Example (versioned APIs)
+
+You can route different versions of your API to different deployments:
+
+```yaml
+rules:
+  - host: shortener.local
+    http:
+      paths:
+        - path: /api/v1
+          pathType: Prefix
+          backend:
+            service:
+              name: shortener-service
+              port:
+                number: 8000
+        - path: /api/v2
+          pathType: Prefix
+          backend:
+            service:
+              name: shortener-v2-service
+              port:
+                number: 8000
+```
+
+This allows full separation between versions while using the same domain.
 
 ---
 
@@ -80,20 +113,21 @@ kubectl logs deployment/url-validator
 
 ## 🧠 Notes
 
-- `BASE_URL` should match the external access URL, e.g. `http://localhost:30080/api/v1`
-- Redis, PostgreSQL, MongoDB, Kafka are currently expected to run **externally in Docker**
-- Kafka address should be reachable via `host.docker.internal` from inside the cluster
-- `shortened_urls` table must exist in PostgreSQL (use Alembic or manual SQL if needed)
+- `BASE_URL` in config should match how your app is accessed externally
+- `root_path` in FastAPI should match ingress path (e.g. `/api/v1`)
+- Kafka, Redis, PostgreSQL, and MongoDB are expected to run externally in Docker
+- Kafka URL must resolve from inside the cluster (e.g. `host.docker.internal`)
+- `shortened_urls` table must be present in PostgreSQL
 
 ---
 
 ## ✨ Next steps (optional ideas)
 
-- Add Ingress with domain routing
-- Helm chart for reusable deployment
-- HorizontalPodAutoscaler for auto-scaling
-- CI/CD for automated rollout
+- Add TLS via `cert-manager` + Ingress annotations
+- Add a second Ingress for `url-validator` if it becomes HTTP-facing
+- Create a Helm chart to template deployments
+- Configure HPA (HorizontalPodAutoscaler)
+- Add CI/CD pipeline for automatic Docker push & deploy
 
 ---
 
-Happy shipping 🚀

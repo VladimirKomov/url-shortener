@@ -17,6 +17,7 @@ spec:
       containers:
         - name: url-validator
           image: redddy/url-validator:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: validator-config

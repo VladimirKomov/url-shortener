@@ -13,7 +13,8 @@ app = FastAPI(
     title="URL Shortener API",
     description="API for shortening links",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
+    root_path="/api/v1"
 )
 
 
@@ -43,7 +44,8 @@ async def exception_handler(request: Request, exc: Exception):
 
 app.middleware("http")(log_requests)
 
-app.include_router(shortener_routers.router, prefix="/api/v1")
+#app.include_router(shortener_routers.router, prefix="/api/v1")
+app.include_router(shortener_routers.router)
 
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)
