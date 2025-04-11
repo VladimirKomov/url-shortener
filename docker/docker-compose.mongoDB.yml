@@ -14,4 +14,4 @@ services:
     volumes:
       - mongo_data:/data/db
     networks:
-      - kafka_network
+      - url_shortener_network
