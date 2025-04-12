@@ -9,3 +9,4 @@
 /k8s/shortener/secret.yaml
 /k8s/url-validator/secret.yaml
 
+/k8s/redis/secret.yaml
