@@ -1,13 +1,19 @@
-# 📦 Kubernetes Deployment for URL Shortener
+# ☸️ Kubernetes Deployment for URL Shortener Project
 
-This directory contains Kubernetes manifests for deploying the `shortener-service` and `url-validator` microservices of the URL Shortener project.
-
+This directory contains Kubernetes manifests for deploying all core services of the URL Shortener system, including:
+- `shortener-service` (FastAPI)
+- `url-validator` (Safe Browsing via Kafka)
+- `redis` (in-cluster cache)
 ---
 
 ## 📂 Structure
 
 ```
 k8s/
+├── redis/
+│   ├── deployment.yaml       # Redis pod with password support
+│   ├── secret.yaml           # Redis password secret
+│   └── service.yaml          # Internal Redis service 
 ├── shortener/
 │   ├── configmap.yaml        # Environment variables
 │   ├── deployment.yaml       # Deployment spec
@@ -19,30 +25,39 @@ k8s/
 │   ├── deployment.yaml
 │   ├── secret.yaml
 │   └── service.yaml          # Optional; not required unless external access needed
+├── Makefile                  # Deployment automation
+└── README_k8s.md # This file
 ```
 
 ---
 
 ## 🚀 How to Deploy
 
-### 1. ✅ Deploy `shortener-service`
+### 1. ✅ Deploy Redis
 
 ```bash
-kubectl apply -f shortener/secret.yaml
-kubectl apply -f shortener/configmap.yaml
-kubectl apply -f shortener/deployment.yaml
-kubectl apply -f shortener/service.yaml
-kubectl apply -f shortener/ingress.yaml
+
+kubectl apply -f redis/
 ```
 
-### 2. ✅ Deploy `url-validator`
+### 2. ✅ Deploy `shortener-service`
 
 ```bash
-kubectl apply -f url-validator/secret.yaml
-kubectl apply -f url-validator/configmap.yaml
-kubectl apply -f url-validator/deployment.yaml
+
+kubectl apply -f shortener/
 ```
 
+### 3. ✅ Deploy `url-validator`
+
+```bash
+
+kubectl apply -f url-validator/
+```
+Or run everything at once:
+```bash
+
+make -C k8s all
+```
 ---
 
 ## 🌍 Accessing the API

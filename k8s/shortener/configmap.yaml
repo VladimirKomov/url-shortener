@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: shortener-config
 data:
-  REDIS_URL: "redis://:redis@host.docker.internal:6379"
+  REDIS_URL: "redis://redis:6379"
   KAFKA_URL: "host.docker.internal:9092"
   KAFKA_TOPIC_URL_VALIDATION: "url_validation_requests"
   KAFKA_GROUP_ID: "url_validator_group"
