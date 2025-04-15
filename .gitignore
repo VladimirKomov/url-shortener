@@ -10,3 +10,11 @@
 /k8s/url-validator/secret.yaml
 
 /k8s/redis/secret.yaml
+/backend/shortener_service/.env.local
+/backend/shortener_service/.env.docker
+
+# statistics-service
+/backend/statistics-service/node_modules/
+/backend/statistics-service/dist/
+/backend/statistics-service/coverage/
+/backend/statistics-service/.env
