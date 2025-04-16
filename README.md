@@ -75,17 +75,25 @@ url-shortener/
 │
 ├── frontend/                  # (Planned) React frontend
 ├── k8s/                       # Kubernetes manifests
+│   ├── redis/
+│   │   ├── deployment.yaml
+│   │   ├── secret.yaml
+│   │   ├── secret.yaml.example
+│   │   └── service.yaml
 │   ├── shortener/
 │   │   ├── configmap.yaml
 │   │   ├── deployment.yaml
 │   │   ├── secret.yaml
 │   │   ├── secret.yaml.example
 │   │   └── service.yaml
-│   └── url-validator/
-│       ├── configmap.yaml
-│       ├── deployment.yaml
-│       ├── secret.yaml
-│       └── secret.yaml.example
+│   ├── url-validator/
+│   │   ├── configmap.yaml
+│   │   ├── deployment.yaml
+│   │   ├── secret.yaml
+│   │   └── secret.yaml.example
+│   ├── Makefile
+│   └── README_k8s.md
+│  
 ├── Makefile
 └── README.md
 ```

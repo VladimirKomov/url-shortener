@@ -5,6 +5,7 @@ COMPOSE := docker-compose \
   -f docker/docker-compose.redis.yml \
   -f docker/docker-compose.mongoDB.yml \
   -f docker/docker-compose.kafka.yml \
+  -f docker/docker-compose.rabbitmq.yml \
   -f docker/docker-compose.services.yml
 
 # Basic

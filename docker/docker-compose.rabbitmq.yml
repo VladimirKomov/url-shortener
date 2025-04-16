@@ -1,0 +1,21 @@
+# project name
+name: url-shortener
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: url_shortener_rabbitmq
+    ports:
+      # AMQP (main protocol RabbitMQ)
+      - "5672:5672"
+      # Web UI
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    networks:
+      - url-shortener_url_shortener_network
+
+networks:
+  url-shortener_url_shortener_network:
+    external: true

@@ -17,7 +17,7 @@ services:
       - redis
       - postgres
     networks:
-      - url_shortener_network
+      - url-shortener_url_shortener_network
 
   url_validator:
     build:
@@ -31,4 +31,8 @@ services:
       - kafka
       - mongo
     networks:
-      - url_shortener_network
+      - url-shortener_url_shortener_network
+
+networks:
+  url-shortener_url_shortener_network:
+    external: true

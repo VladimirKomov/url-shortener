@@ -27,4 +27,8 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - url_shortener_network
+      - url-shortener_url_shortener_network
+
+networks:
+  url-shortener_url_shortener_network:
+    external: true
