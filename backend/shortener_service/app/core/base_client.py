@@ -3,12 +3,17 @@ import asyncio
 from abc import ABC
 from typing import Union
 
+import aio_pika
 import redis.asyncio as aioredis
 from aiokafka import AIOKafkaProducer
 
 from app.core.logger import logger
 
-ClientType = Union[AIOKafkaProducer, aioredis.Redis, None]
+ClientType = Union[
+    AIOKafkaProducer,
+    aioredis.Redis,
+    aio_pika.RobustConnection,
+    None]
 
 
 class BaseAsyncClient(ABC):
