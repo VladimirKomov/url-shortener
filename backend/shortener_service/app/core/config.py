@@ -18,4 +18,10 @@ class Config:
     KAFKA_GROUP_ID: str = os.getenv("KAFKA_GROUP_ID")
     KAFKA_TOPIC_VALIDATION_RESULT: str = os.getenv("KAFKA_TOPIC_VALIDATION_RESULT")
 
+    RABBITMQ_HOST: str = os.getenv("RABBITMQ_HOST")
+    RABBITMQ_PORT: int = int(os.getenv("RABBITMQ_PORT"))
+    RABBITMQ_DEFAULT_USER: str = os.getenv("RABBITMQ_DEFAULT_USER")
+    RABBITMQ_DEFAULT_PASS: str = os.getenv("RABBITMQ_DEFAULT_PASS")
+    RABBITMQ_VHOST: str = os.getenv("RABBITMQ_VHOST")
+
 config = Config()

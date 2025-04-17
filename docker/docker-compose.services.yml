@@ -7,7 +7,6 @@ services:
       context: ../backend
       dockerfile: shortener_service/Dockerfile
     container_name: shortener_service
-    restart: always
     env_file:
       - ../backend/shortener_service/.env
     ports:
@@ -24,7 +23,6 @@ services:
       context: ../backend
       dockerfile: url-validator/Dockerfile
     container_name: url_validator
-    restart: always
     env_file:
       - ../backend/url-validator/.env
     depends_on:
