@@ -3,8 +3,8 @@ import asyncio
 from abc import ABC
 from typing import Union
 
-import aio_pika
 import redis.asyncio as aioredis
+from aio_pika.abc import AbstractRobustConnection
 from aiokafka import AIOKafkaProducer
 
 from app.core.logger import logger
@@ -12,7 +12,7 @@ from app.core.logger import logger
 ClientType = Union[
     AIOKafkaProducer,
     aioredis.Redis,
-    aio_pika.RobustConnection,
+    AbstractRobustConnection,
     None]
 
 

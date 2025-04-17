@@ -7,6 +7,7 @@ from app.mappers.shortener_kafka_mapper import ValidationKafkaMapper
 
 
 class ShortenerKafkaProducerService:
+
     def __init__(self):
         self._client: AIOKafkaProducer | None = None
 
