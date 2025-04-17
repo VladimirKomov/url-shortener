@@ -30,3 +30,4 @@ async def lifespan(_: FastAPI):
     await redis_client.close()
     await kafka_producer_client.close()
     await kafka_consumer_client.shutdown()
+    await rabbit_mq_producer_client.close()

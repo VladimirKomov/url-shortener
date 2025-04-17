@@ -8,7 +8,7 @@ from app.core.logger import logger
 class ShortenerRedisCacheServices:
 
     def __init__(self):
-        self.client = None
+        self.client: Redis | None = None
 
     async def _get_client(self) -> Redis:
         if self.client is None:

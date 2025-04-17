@@ -1,12 +1,13 @@
-from fastapi import APIRouter, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Request
 from fastapi.params import Depends
 from starlette.responses import RedirectResponse
 
 from app.databases.redis import redis_client
 from app.dependencies.shortener_service import get_url_shortener_service
 from app.interfaces.shortener_interfaces import AbstractShortenerService
+from app.mappers.shortener_click_event_mapper import ClickEventMapper
 from app.mappers.shortener_mapper import ShortenerMapper
-from app.schemas.shortener_schemas import ShortenRequest, ShortenResponse, URLStatsResponse
+from app.schemas.shortener_schemas import ShortenRequest, ShortenResponse, URLStatsResponse, ClickEvent
 
 router = APIRouter()
 
@@ -24,6 +25,7 @@ async def shorten_url(
 @router.get("/go/{short_code}", response_class=RedirectResponse)
 async def get_original_url(
         short_code: str,
+        request: Request,
         background_tasks: BackgroundTasks,
         service: AbstractShortenerService = Depends(get_url_shortener_service)
 ):
@@ -32,6 +34,8 @@ async def get_original_url(
         short_code=short_code,
         background_tasks=background_tasks
     )
+    event: ClickEvent = ClickEventMapper.from_request(short_code, request)
+    # background_tasks.add_task(service.rabbitmq_producer.send_click_event, event)
     return ShortenerMapper.to_redirect_response(original_url)
 
 

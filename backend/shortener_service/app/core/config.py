@@ -23,5 +23,6 @@ class Config:
     RABBITMQ_DEFAULT_USER: str = os.getenv("RABBITMQ_DEFAULT_USER")
     RABBITMQ_DEFAULT_PASS: str = os.getenv("RABBITMQ_DEFAULT_PASS")
     RABBITMQ_VHOST: str = os.getenv("RABBITMQ_VHOST")
+    RABBITMQ_QUEUE_CLICK_EVENTS: str = os.getenv("RABBITMQ_QUEUE_CLICK_EVENTS")
 
 config = Config()

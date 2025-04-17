@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Optional
+
 from pydantic import BaseModel, HttpUrl
 
 class ShortenRequest(BaseModel):
@@ -10,3 +13,10 @@ class ShortenResponse(BaseModel):
 class URLStatsResponse(BaseModel):
     short_code: str
     clicks: int
+
+class ClickEvent(BaseModel):
+    short_code: str
+    ip_address: str
+    user_agent: Optional[str]
+    referer: Optional[str]
+    timestamp: datetime
