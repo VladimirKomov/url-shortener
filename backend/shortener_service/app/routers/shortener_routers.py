@@ -2,7 +2,6 @@ from fastapi import APIRouter, BackgroundTasks, Request
 from fastapi.params import Depends
 from starlette.responses import RedirectResponse
 
-from app.databases.redis import redis_client
 from app.dependencies.shortener_service import get_url_shortener_service
 from app.interfaces.shortener_interfaces import AbstractShortenerService
 from app.mappers.shortener_click_event_mapper import ClickEventMapper
@@ -29,13 +28,14 @@ async def get_original_url(
         background_tasks: BackgroundTasks,
         service: AbstractShortenerService = Depends(get_url_shortener_service)
 ):
-    """Redirect to original url"""
+    """ Redirect to original url """
     original_url = await service.get_original_url(
         short_code=short_code,
-        background_tasks=background_tasks
     )
+    # send_click_event to statistics
     event: ClickEvent = ClickEventMapper.from_request(short_code, request)
-    # background_tasks.add_task(service.rabbitmq_producer.send_click_event, event)
+    background_tasks.add_task(service.send_click_event, event)
+
     return ShortenerMapper.to_redirect_response(original_url)
 
 
@@ -58,12 +58,3 @@ async def delete_short_url(
     if not success:
         return {"message": "URL not found"}
     return {"message": "Short URL deleted"}
-
-
-# for test, delete after
-@router.get("/test-redis/")
-async def test_redis():
-    client = await redis_client.get_client()
-    await client.set("test_key", "Hello, Redis!", ex=60)
-    value = await client.get("test_key")
-    return {"test_key": value}

@@ -31,6 +31,8 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       # memory limit
       KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
+      # time limit
+      KAFKA_LOG_RETENTION_HOURS: 12
     depends_on:
       - zookeeper
     networks:
