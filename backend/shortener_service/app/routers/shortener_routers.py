@@ -2,7 +2,6 @@ from fastapi import APIRouter, BackgroundTasks, Request
 from fastapi.params import Depends
 from starlette.responses import RedirectResponse
 
-from app.databases.redis import redis_client
 from app.dependencies.shortener_service import get_url_shortener_service
 from app.interfaces.shortener_interfaces import AbstractShortenerService
 from app.mappers.shortener_click_event_mapper import ClickEventMapper
@@ -59,12 +58,3 @@ async def delete_short_url(
     if not success:
         return {"message": "URL not found"}
     return {"message": "Short URL deleted"}
-
-
-# for test, delete after
-@router.get("/test-redis/")
-async def test_redis():
-    client = await redis_client.get_client()
-    await client.set("test_key", "Hello, Redis!", ex=60)
-    value = await client.get("test_key")
-    return {"test_key": value}

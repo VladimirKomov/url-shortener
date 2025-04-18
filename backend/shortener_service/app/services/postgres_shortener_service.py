@@ -8,7 +8,6 @@ from app.core.config import config
 from app.core.exceptions import URLNotFoundException, URLInvalidException, URLPendingException
 from app.interfaces.shortener_interfaces import AbstractShortenerService
 from app.mappers.shortener_mapper import ShortenerMapper
-from app.messaging.rabbit_producer import RabbitMQProducerClient
 from app.repositories.shortener_ropository import ShortenerRepository
 from app.schemas.shortener_schemas import ShortenResponse, URLStatsResponse, ClickEvent
 from app.services.helpers.shortener_kafka_producer_services import ShortenerKafkaProducerService
@@ -63,10 +62,6 @@ class PostgresShortenerService(AbstractShortenerService):
         """Save to cache"""
         await self.cache.set(short_code, original_url)
 
-    async def _update_clicks(self, short_code: str) -> None:
-        """Update clicks"""
-        await self.repo.increment_clicks(short_code)
-
     async def create_short_url(self, original_url: str, background_tasks: BackgroundTasks) -> ShortenResponse:
         """Create short url"""
         existing_url = await self.repo.get_url_by_long_url(original_url)
@@ -108,7 +103,6 @@ class PostgresShortenerService(AbstractShortenerService):
     async def send_click_event(self, event: ClickEvent):
         """Send click event to RabbitMQ for analytics"""
         await self.rabbitmq_producer.send_click_event(event)
-
 
     async def get_stats(self, short_code: str) -> URLStatsResponse:
         """Get stats"""
