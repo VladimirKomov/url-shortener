@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from fastapi import BackgroundTasks
 
-from app.schemas.shortener_schemas import URLStatsResponse
+from app.schemas.shortener_schemas import URLStatsResponse, ClickEvent
 from shared_models.kafka.url_validation import UrlValidationResult
 
 
@@ -20,8 +20,12 @@ class AbstractShortenerService(ABC):
         pass
 
     @abstractmethod
-    async def get_original_url(self, short_code: str, background_tasks: BackgroundTasks) -> str:
+    async def get_original_url(self, short_code: str) -> str:
         """ Get the original url """
+        pass
+
+    async def send_click_event(self, event: ClickEvent):
+        """ Send click event to RabbitMQ for analytics """
         pass
 
     @abstractmethod

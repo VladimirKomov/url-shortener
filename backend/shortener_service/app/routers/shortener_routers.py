@@ -29,13 +29,14 @@ async def get_original_url(
         background_tasks: BackgroundTasks,
         service: AbstractShortenerService = Depends(get_url_shortener_service)
 ):
-    """Redirect to original url"""
+    """ Redirect to original url """
     original_url = await service.get_original_url(
         short_code=short_code,
-        background_tasks=background_tasks
     )
+    # send_click_event to statistics
     event: ClickEvent = ClickEventMapper.from_request(short_code, request)
-    # background_tasks.add_task(service.rabbitmq_producer.send_click_event, event)
+    background_tasks.add_task(service.send_click_event, event)
+
     return ShortenerMapper.to_redirect_response(original_url)
 
 

@@ -8,9 +8,11 @@ from app.core.config import config
 from app.core.exceptions import URLNotFoundException, URLInvalidException, URLPendingException
 from app.interfaces.shortener_interfaces import AbstractShortenerService
 from app.mappers.shortener_mapper import ShortenerMapper
+from app.messaging.rabbit_producer import RabbitMQProducerClient
 from app.repositories.shortener_ropository import ShortenerRepository
-from app.schemas.shortener_schemas import ShortenResponse, URLStatsResponse
+from app.schemas.shortener_schemas import ShortenResponse, URLStatsResponse, ClickEvent
 from app.services.helpers.shortener_kafka_producer_services import ShortenerKafkaProducerService
+from app.services.helpers.shortener_rabbit_producer_services import ShortenerRabbitProducerServices
 from app.services.helpers.shortener_redis_cache_services import ShortenerRedisCacheServices
 from shared_models.kafka.enums import ValidationStatus
 from shared_models.kafka.url_validation import UrlValidationResult
@@ -23,6 +25,7 @@ class PostgresShortenerService(AbstractShortenerService):
         self.repo = ShortenerRepository(db)
         self.cache = ShortenerRedisCacheServices()
         self.kafka_producer = ShortenerKafkaProducerService()
+        self.rabbitmq_producer = ShortenerRabbitProducerServices()
 
     async def _generate_short_code(self, length: int = 6) -> str:
         """Generate short code"""
@@ -45,7 +48,7 @@ class PostgresShortenerService(AbstractShortenerService):
 
         return url_obj.original_url
 
-    async def _get_url_from_cache_or_db(self, short_code: str, background_tasks: BackgroundTasks) -> str:
+    async def _get_url_from_cache_or_db(self, short_code: str) -> str:
         """Get url from cache or db"""
         cached_url = await self.cache.get(short_code)
         if cached_url:
@@ -95,14 +98,17 @@ class PostgresShortenerService(AbstractShortenerService):
             checked_at=url_validation_result.checked_at
         )
 
-    async def get_original_url(self, short_code: str, background_tasks: BackgroundTasks) -> str:
+    async def get_original_url(self, short_code: str) -> str:
         """Get original url"""
         original_url = await self._get_url_from_cache_or_db(
             short_code,
-            background_tasks
         )
-        background_tasks.add_task(self._update_clicks, short_code)
         return original_url
+
+    async def send_click_event(self, event: ClickEvent):
+        """Send click event to RabbitMQ for analytics"""
+        await self.rabbitmq_producer.send_click_event(event)
+
 
     async def get_stats(self, short_code: str) -> URLStatsResponse:
         """Get stats"""
