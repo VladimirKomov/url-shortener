@@ -13,6 +13,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
                 const pass = configService.get('RABBITMQ_DEFAULT_PASS');
                 const vhost = configService.get('RABBITMQ_VHOST');
                 const queue = configService.get('RABBITMQ_QUEUE_CLICK_EVENTS');
+                const exchange = configService.get('RABBITMQ_EXCHANGE_CLICK_EVENTS');
 
                 const uri = `amqp://${user}:${pass}@${host}:${port}${vhost}`;
 
@@ -24,7 +25,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
                     },
                     exchanges: [
                         {
-                            name: 'clicks_exchange',
+                            name: exchange,
                             type: 'topic',
                         },
                     ],
