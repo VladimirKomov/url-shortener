@@ -96,36 +96,3 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-
-```
-┌────────────────────────────┐
-│        FastAPI App         │
-│ ───────────────────────── │
-│ Sends message:             │
-│ exchange: clicks_exchange │
-│ routing_key: clicks       │
-│ payload: {...}            │
-└────────────┬───────────────┘
-             │
-             ▼
-     ┌────────────────────┐
-     │  clicks_exchange   │◄───────────────┐
-     │ (type: topic)      │                │
-     └────────┬───────────┘                │
-              │routing_key = "clicks"      │
-              ▼                            │ (binding)
-     ┌────────────────────┐                │
-     │   click_events      │◄──────────────┘
-     │    (queue)          │
-     └────────┬───────────┘
-              │
-              ▼
-     ┌────────────────────┐
-     │   NestJS Service    │
-     │ @RabbitSubscribe()  │
-     │  exchange: clicks_exchange
-     │  routingKey: clicks
-     │  queue: click_events
-     └────────────────────┘
-
-```
