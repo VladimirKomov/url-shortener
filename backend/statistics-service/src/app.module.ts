@@ -1,16 +1,19 @@
-import {Module} from '@nestjs/common';
-import {ClickEventsModule} from './click-events/click-events.module';
-import {RabbitMQConfigModule} from "./rabbitmq.module";
-import {ConfigModule} from "@nestjs/config";
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import {UrlClickConsumer} from "./url-click.consumer";
 
 @Module({
-    imports: [
-        // load config from .env
-        ConfigModule.forRoot({ isGlobal: true }),
-        ClickEventsModule,
-        RabbitMQConfigModule
-    ],
-
+  imports: [
+      ConfigModule.forRoot({
+        isGlobal: true,
+      }),
+  ],
+  controllers: [
+      UrlClickConsumer,
+      AppController
+  ],
+  providers: [AppService],
 })
-export class AppModule {
-}
+export class AppModule {}
