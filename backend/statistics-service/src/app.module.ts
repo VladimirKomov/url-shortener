@@ -1,19 +1,27 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import {UrlClickConsumer} from "./url-click.consumer";
+import {Module} from '@nestjs/common';
+import {ConfigModule} from '@nestjs/config';
+import {UrlClickConsumer} from "./consumers/url-click.consumer";
+import {ClickStatsService} from './services/click-stats/click-stats.service';
+import {MongooseModule} from "@nestjs/mongoose";
+import {MongoConfigService} from "./database/mongo-config.service";
 
 @Module({
-  imports: [
-      ConfigModule.forRoot({
-        isGlobal: true,
-      }),
-  ],
-  controllers: [
-      UrlClickConsumer,
-      AppController
-  ],
-  providers: [AppService],
+    imports: [
+        ConfigModule.forRoot({
+            isGlobal: true,
+        }),
+
+        MongooseModule.forRootAsync({
+            useClass: MongoConfigService,
+        }),
+    ],
+    controllers: [
+        UrlClickConsumer,
+    ],
+    providers: [
+        MongoConfigService,
+        ClickStatsService
+    ],
 })
-export class AppModule {}
+export class AppModule {
+}
