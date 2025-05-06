@@ -13,3 +13,11 @@ export interface ClickEventDto {
     referer?: string;
     timestamp: Date;
 }
+
+export interface ClickEventResponseDto {
+    shortCode: string;
+    ipAddress: string;
+    userAgent?: string;
+    referer?: string;
+    timestamp: Date;
+}
