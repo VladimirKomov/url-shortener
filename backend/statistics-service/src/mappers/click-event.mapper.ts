@@ -1,4 +1,4 @@
-import {ClickEventDto, RawClickEventDto} from "../dto/click-event.dto";
+import {ClickEventDto, ClickEventResponseDto, RawClickEventDto} from "../dto/click-event.dto";
 
 export const mapRawClickEvent = (rawClickEvent: RawClickEventDto): ClickEventDto => {
     return {
@@ -9,4 +9,14 @@ export const mapRawClickEvent = (rawClickEvent: RawClickEventDto): ClickEventDto
         timestamp: new Date(rawClickEvent.timestamp)
     }
 };
+
+export const mapClickEventToResponse = (doc: any): ClickEventResponseDto => {
+    return {
+        shortCode: doc.shortCode,
+        ipAddress: doc.ipAddress,
+        userAgent: doc.userAgent,
+        referer: doc.referer,
+        timestamp: doc.timestamp.toISOString()
+    }
+}
 
