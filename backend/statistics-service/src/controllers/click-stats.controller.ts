@@ -1,5 +1,5 @@
 import {Controller, Get, Param, Query} from "@nestjs/common";
-import {ClickStatsService} from "../services/click-stats/click-stats.service";
+import {ClickStatsService} from "../services/click-stats.service";
 import {createLogger} from "../utils/logger.util";
 import {ClickEventResponseDto} from "../dto/click-event.dto";
 
