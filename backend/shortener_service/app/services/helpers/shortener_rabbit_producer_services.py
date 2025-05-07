@@ -45,9 +45,16 @@ class ShortenerRabbitProducerServices:
             # Announce exchange
             exchange = await self._get_exchange()
 
+            # field 'pattern' is required for Nestjs
+            message_body = {
+                "pattern": self._routing_key,
+                "data": event.model_dump(),
+            }
+
             # Prepare a message
             payload = aio_pika.Message(
-                body=json.dumps(event.model_dump(), default=str).encode(),
+                #body=json.dumps(event.model_dump(), default=str).encode(),
+                body=json.dumps(message_body, default=str).encode(),
                 # save the message
                 delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
             )
@@ -59,7 +66,7 @@ class ShortenerRabbitProducerServices:
                 mandatory=True
             )
 
-            logger.info(f"RabbitMQ event sent: short_code={event.short_code}")
+            logger.info(f"RabbitMQ event sent: short_code={event.short_code} for key={self._routing_key}")
             return True
 
         except Exception as e:

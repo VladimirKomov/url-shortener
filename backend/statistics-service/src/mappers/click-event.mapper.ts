@@ -16,7 +16,7 @@ export const mapClickEventToResponse = (doc: any): ClickEventResponseDto => {
         ipAddress: doc.ipAddress,
         userAgent: doc.userAgent,
         referer: doc.referer,
-        timestamp: doc.timestamp.toISOString()
+        timestamp: doc.timestamp ? doc.timestamp.toISOString() : null,
     }
 }
 

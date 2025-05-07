@@ -27,19 +27,27 @@ graph TD
    G[Google Safe Browsing]
    H[MongoDB]
    I[Kafka Topic: validation_result]
+   J["Click Statistics Service (NestJS)"]
+   K["RabbitMQ Exchange: clicks_exchange"]
 
    A -->|POST /shorten| B
    A -->|GET /short_code| B
+   A -->|GET /stats/:shortCode| J
 
    B -->|Save| C
    B -->|Cache| D
    B -->|Send to Kafka| E
+   B -->|Send click event| K
 
    E --> F
    F -->|Validate| G
-   F -->|Store result| H
    F -->|Send status to Kafka| I
+   F -->|Store result| H
    I -->|Consume result| B
+
+   K -->|Consume click events| J
+   J -->|Store click| H
+
 ```
 
 ---
@@ -47,13 +55,14 @@ graph TD
 ## 🧰 Tech Stack
 
 | Layer         | Tech Stack                                                                 |
-|--------------|-----------------------------------------------------------------------------|
-| Backend       | [FastAPI](https://fastapi.tiangolo.com/), [SQLAlchemy](https://sqlalchemy.org/), [Pydantic](https://docs.pydantic.dev/) |
+|---------------|------------------------------------------------------------------------------|
+| Backend       | [FastAPI](https://fastapi.tiangolo.com/), [NestJS](https://nestjs.com/), [SQLAlchemy](https://sqlalchemy.org/), [Pydantic](https://docs.pydantic.dev/) |
 | Databases     | [PostgreSQL](https://www.postgresql.org/), [Redis](https://redis.io/), [MongoDB](https://www.mongodb.com/) |
-| Messaging     | [Kafka](https://kafka.apache.org/)                                          |
+| Messaging     | [Kafka](https://kafka.apache.org/), [RabbitMQ](https://www.rabbitmq.com/)   |
 | DevOps        | [Docker](https://www.docker.com/), [Kubernetes](https://kubernetes.io/)     |
 | CI/CD         | GitHub Actions *(planned)*                                                  |
 | Frontend      | React *(planned)*                                                           |
+
 
 ---
 
@@ -64,7 +73,8 @@ url-shortener/
 ├── backend/
 │   ├── shared_models/         # Shared Pydantic schemas
 │   ├── shortener_service/     # Main FastAPI app
-│   └── url-validator/         # Microservice for URL validation
+│   ├── shortener_service/     # Microservice for statistics [NestJS]
+│   └── url-validator/         # Microservice for URL validation [FastAPI]
 ├── docker/
 │   ├── docker-compose.base.yml
 │   ├── docker-compose.kafka.yml
@@ -210,8 +220,9 @@ make deploy-validator  # Apply validator to Kubernetes
 
 ## ✅ Project Status
 
-- ✅ Backend, Kafka, Redis, Mongo — working
+- ✅ Backend, Kafka, RabbitMQ, Redis, Mongo — working
 - ✅ URL validation pipeline — done
+- ✅ URL statistics — in progress
 - ⚙️ CI/CD, Frontend — coming soon
 
 ---

@@ -27,11 +27,12 @@ export class ClickStatsService {
         });
     }
 
-    async getClickStats(shortCode: string): Promise<ClickEventResponseDto[]> {
+    async getClickStats(shortCode: string, limit = 100): Promise<ClickEventResponseDto[]> {
 
         const raw = await  this.clickEventModel
             .find({ shortCode })
             .sort({ timestamp: -1 })
+            .limit(limit)
             .lean();
 
         return raw.map(mapClickEventToResponse)

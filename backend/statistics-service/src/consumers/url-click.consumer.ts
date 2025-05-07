@@ -3,7 +3,7 @@ import {EventPattern, Payload} from "@nestjs/microservices";
 import {RawClickEventDto} from "../dto/click-event.dto";
 import {mapRawClickEvent} from "../mappers/click-event.mapper";
 import {createLogger} from "../utils/logger.util";
-import {ClickStatsService} from "../services/click-stats/click-stats.service";
+import {ClickStatsService} from "../services/click-stats.service";
 
 @Controller()
 export class UrlClickConsumer {
