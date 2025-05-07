@@ -5,6 +5,7 @@ import {ClickStatsService} from './services/click-stats/click-stats.service';
 import {MongooseModule} from "@nestjs/mongoose";
 import {MongoConfigService} from "./database/mongo-config.service";
 import {ClickEventEntity, ClickEventSchema} from "./models/click-event.schema";
+import {ClickStatsController} from "./controllers/click-stats.controller";
 
 @Module({
     imports: [
@@ -20,6 +21,7 @@ import {ClickEventEntity, ClickEventSchema} from "./models/click-event.schema";
     ],
     controllers: [
         UrlClickConsumer,
+        ClickStatsController
     ],
     providers: [
         MongoConfigService,
