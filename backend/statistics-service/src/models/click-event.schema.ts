@@ -4,7 +4,7 @@ import {Document} from "mongoose";
 
 export type ClickEventDocument = ClickEventEntity & Document;
 
-@Schema()
+@Schema({ collection: 'click_events' })
 export class ClickEventEntity {
     @Prop({required: true})
     shortCode: string;
