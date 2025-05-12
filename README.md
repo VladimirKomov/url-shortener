@@ -72,7 +72,7 @@ graph TD
 url-shortener/
 ├── backend/
 │   ├── shared_models/         # Shared Pydantic schemas
-│   ├── shortener_service/     # Main FastAPI app
+│   ├── shortener_service/     # Main FastAPI app [FastAPI]
 │   ├── shortener_service/     # Microservice for statistics [NestJS]
 │   └── url-validator/         # Microservice for URL validation [FastAPI]
 ├── docker/
