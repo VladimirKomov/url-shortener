@@ -107,7 +107,13 @@ url-shortener/
 ├── Makefile
 └── README.md
 ```
+## 🧠 What I Practiced
 
+- Microservice architecture with message brokers (Kafka & RabbitMQ)
+- Async processing pipelines in FastAPI
+- Kubernetes manifests and deployment
+- Semantic versioning of services and infrastructure
+- Stateless design and Redis-based caching
 ---
 
 ## 🔐 Configuration & Secrets
